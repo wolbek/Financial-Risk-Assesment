@@ -4,7 +4,7 @@
 ```git clone https://github.com/wolbek/Financial-Risk-Assesment.git```
 
 ### Change your path to the project in cli
-```cd '.\Financial-Risk-Assessment\'```
+```cd .\Financial-Risk-Assessment\```
 
 ### Install virtual env using:
 ```pip install virtualenv```

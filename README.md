@@ -30,9 +30,6 @@
 ### Run the application:   
 ```.\run.bat run```
 
-### Run the project using:
-```python manage.py runserver```
-
 ### In the browser open:
 ```localhost:8000```
 

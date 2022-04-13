@@ -1,7 +1,7 @@
 ## TO USE THE PROJECT:
 
 ### Clone the project using:
-```git clone https://github.com/wolbek/Financial-Risk-Assesment.git```
+```git clone https://github.com/wolbek/Financial-Risk-Assessment.git```
 
 ### Change your path to the project in cli
 ```cd .\Financial-Risk-Assessment\```

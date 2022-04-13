@@ -6,7 +6,7 @@
 ### Change your path to the project in cli
 ```cd .\Financial-Risk-Assessment\```
 
-### Install virtual env using:
+### Install virtual env using (if not installed in system) :
 ```pip install virtualenv```
 
 ### Make virtual environment using:
@@ -18,13 +18,13 @@
 ### Install requirements.txt using:
 ```pip install -r requirements.txt```
 
-### Initialize database and create folders in uploads:  
+### Initialize database:  
 ```.\run.bat init-db```
 
 ### Create users:  
 ```.\run.bat create-users```
 
-### (optional) Seed data:   
+### Seed data (optional):   
 ```.\run.bat seed-data```
 
 ### Run the application:   

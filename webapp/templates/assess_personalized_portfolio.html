@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Assess Personalized Portfolio{% endblock %}
+
+{% block content %}
+<h1>Assess Personalized Portfolio</h1>
+<p>Enter your NSE stocks and their weights to assess the portfolio</p>
+<div>
+    Your budget
+    <br>
+    <input id="budget" type="number">
+</div>
+<h2>Portfolio</h2>
+<table id="portfolioTable">
+    <tr>
+        <th>NSE Stocks</th>
+        <th>Weights (in %)</th>
+    </tr>
+    <tr>
+        <td>
+            <select name="stock1" class="select2-selector">
+                <option value='' selected>--Select a stock--</option>
+                {% for company in companies %}
+                <option value="{{company.name}}">{{company.name}}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td><input type="number" min="0" max="100" name="weight1"></td>
+
+    </tr>
+</table>
+<i class="fa-solid fa-circle-plus"></i>
+<i class="fa-solid fa-circle-minus"></i>
+<div>
+    <button type="button" id="assessButton">Assess Portfolio</button>
+</div>
+
+<div id="plot" style="width:50%;"></div>
+
+<script>
+    let stockCount = 1;
+    // Add new experience input field when clicked on add circle (Delegated Event)
+    $(".fa-circle-plus").on("click", function () {
+        ++stockCount;
+        let html =
+            `<tr>` +
+            `<td>` +
+            `<select name="stock${stockCount}" class="select2-selector">` +
+            `<option value='' selected>--Select a stock--</option>` +
+            `{% for company in companies %}` +
+            `<option value="{{company.name}}">{{company.name}}</option>` +
+            `{% endfor %}` +
+            `</select>` +
+            `</td>` +
+            `<td><input type="number" min="0" max="100" name="weight${stockCount}"></td>` +
+            `</tr>`
+        $("#portfolioTable").append(html);
+        $('.select2-selector').select2({
+            width: '100%',
+            dropdownAutoWidth: true
+        });
+    });
+
+    //Delete respective education field or experience field when clicked on remove button (Delegated Event)
+    $(".fa-circle-minus").on("click", function () {
+        $("#portfolioTable").find("tr:last").remove();
+        --stockCount;
+    })
+
+    //Change the cursor to pointer when it is on add circle icon and delete field icon
+    $(".fa-circle-plus,.fa-circle-minus").on("mouseenter", function () {
+        $(this).css("cursor", "pointer");
+    })
+
+    $("#assessButton").on("click", function (event) {
+        validationOnClicked();
+        if (!$(".error")[0]) {
+            budget = $("#budget").val();
+            stocks = [];
+            weights = [];
+            for (let i = 0; i < stockCount; i++) {
+                stocks.push($(`[name='stock${i + 1}']`).val());
+                weights.push($(`[name='weight${i + 1}']`).val());
+            }
+
+            $.ajax({
+                method: "POST",
+                url: "/api/f1/line-chart",
+                data: {
+                    budget: budget,
+                    stocks: stocks,
+                    weights: weights,
+                },
+                success: function (data) {
+                    data = JSON.parse(data);
+                    let traces = []
+
+                    $.each(data.chart_data.stock_prices, function (stock, stock_prices) {
+                        traces.push({
+                            x: data.chart_data.dates,
+                            y: stock_prices,
+                            name: stock
+                        });
+                    })
+                    let background_color = "rgba(0, 0, 21, 1)"
+                    let layout = {
+                        title: "Line Chart",
+                        plot_bgcolor: background_color,
+                        paper_bgcolor: background_color
+                    };
+
+                    let config = {
+                        responsive: true
+                    };
+
+                    Plotly.newPlot("plot", traces, layout, config)
+                }
+            })
+        }
+    });
+
+    function validationOnClicked() {
+        if ($("#budget").val() == '') {
+            $("#budget").closest("div").find("p").remove();
+            $("#budget").closest("div").append($("<p>").text("This field is required").addClass('error'))
+        }
+        else {
+            $("#budget").closest("div").find("p").remove();
+        }
+
+        for (let i = 0; i < stockCount; i++) {
+            if ($(`[name='stock${i + 1}']`).val() == '') {
+                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='stock${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+            }
+            else {
+                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
+            }
+            if ($(`[name='weight${i + 1}']`).val() == '') {
+                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='weight${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+            }
+            else {
+                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
+            }
+
+        }
+    }
+
+</script>
+{% endblock %}

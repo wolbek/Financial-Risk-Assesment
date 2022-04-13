@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Page{% endblock %}
+
+{% block content %}
+<h1>Login page</h1>
+<form method="POST" enctype="multipart/form-data">
+    {{form.hidden_tag()}}
+    {% for field in form %}
+    {% if field.id != 'csrf_token' %}
+    <div>
+        {{field.label()}}
+        <br>
+        {{field()}}
+    </div>
+    <div>
+        {% if field.description and not field.errors %}
+        {{field.description}}
+        {% endif %}
+    </div>
+    <div>
+        {% for error in field.errors %}
+        {{error}}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    <br>
+    <button type="submit">Log In</button>
+</form>
+{% endblock %}

@@ -31,7 +31,7 @@
 ```.\run.bat run```
 
 ### In the browser open:
-```localhost:8000```
+```localhost:5000```
 
 ### To login as existing user use one of the listed emails:
 

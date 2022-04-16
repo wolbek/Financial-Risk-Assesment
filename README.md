@@ -12,6 +12,9 @@
 ### Make virtual environment using:
 ```virtualenv venv```
 
+### To enable running scripts on system
+``Set-ExecutionPolicy Unrestricted``
+
 ### Activate virtual environment using:
 ```.\venv\Scripts\activate```
 

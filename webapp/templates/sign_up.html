@@ -1,31 +1,41 @@
 {% extends 'base.html' %}
 
 {% block title %}Sign Up Page{% endblock %}
+{% block links %}
+<link href="{{ url_for('static', filename='css/signup.css') }}" rel="stylesheet" />
+{% endblock %}
 
 {% block content %}
-<h1>Sign Up page</h1>
-<form method="POST" enctype="multipart/form-data">
-    {{form.hidden_tag()}}
-    {% for field in form %}
-    {% if field.id != 'csrf_token' %}
-    <div>
-        {{field.label()}}
-        <br>
-        {{field()}}
+<div class="container-fluid">
+    <div class="row text-white">
+        <div class="col">
+            <div class="position-absolute top-50 start-50 translate-middle" id="sign">
+                <img src="/static/images/signup.svg" style="width: 100px; margin: 20px 0;" /><br><br>
+                <form id="sign-up-form" method="POST" enctype="multipart/form-data">
+
+                    {{form.hidden_tag()}}
+                    {% for field in form %}
+                    {% if field.id != 'csrf_token' %}
+                    
+                    <div class="input-group mb-3" class="ip">
+                        {{field(class="form-control bg-transparent border-0 text-white border-bottom border-info rounded-0")}}
+                    </div>                 
+                    <div>
+                        {% for error in field.errors %}
+                        <div style="color: red;font-size: 11px;">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <br>
+                    <div class="d-grid gap-2 d-flex col-12 mx-auto">
+                        <button type="submit" class="btn " id="signupbtn">Sign Up</button>
+                    </div>
+                    <br>
+                    <p>Already have an account? <span><a href="{{url_for('login')}}" id="login">Sign In</a></span></p>
+                </form>
+            </div>
+        </div>
     </div>
-    <div>
-        {% if field.description and not field.errors %}
-        {{field.description}}
-        {% endif %}
-    </div>
-    <div>
-        {% for error in field.errors %}
-        {{error}}
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endfor %}
-    <br>
-    <button type="submit">Sign Up</button>
-</form>
+</div>
 {% endblock %}

@@ -1,60 +1,96 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 
 {% block title %}Assess Personalized Portfolio{% endblock %}
 
-{% block content %}
-<h1>Assess Personalized Portfolio</h1>
-<p>Enter your NSE stocks and their weights to assess the portfolio</p>
-<div>
-    Your budget
-    <br>
-    <input id="budget" type="number">
+{% block links %}
+<link href="{{ url_for('static', filename='css/assess_personalized_portfolio.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block main %}
+<div class="order-lg-first">
+    <div class="row" id="main-div">
+        <h2 id="main-heading">Build Your Portfolio</h2>
+        <p id="sub-heading">Enter your NSE stocks and their weights to assess the portfolio</p>
+        <div id="portfolio-wrapper">
+            <div class="row my-2 stock-wrapper">
+                <div class="col-lg-8 my-2">
+                    <select name="stock1" class="select2-selector">
+                        <option value='' selected>--Select a stock--</option>
+                        {% for company in companies %}
+                        <option value="{{company.name}}">{{company.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 my-2">
+                    <input type="number" min="0" max="100"
+                        class="form-control bg-transparent border-0 text-white weight" name="weight1"
+                        placeholder="Weight in %" required>
+                </div>
+                <div class="col my-2 action-buttons">
+                    <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
+                            width="90%" /></button>
+                    <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
+                            width="90%" /></button>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
+            <button type="submit" class="btn assessButton" id="cta">Assess portfolio</button>
+            <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button>
+        </div>
+
+        <div id="chart-spinner" class="pt-4" style="display: none;">
+            <div class="spinner"></div>
+            <div class="spinner-text">Loading</div>
+        </div>
+        <div id="output-wrapper" style="display:none;">
+            <p style="text-align:center;margin-top: 30px;">Till Date Return On Investment:</p>
+            <h1 id="sharpe-ratio" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
+            <div id="plot1" class="chart-info" style="width:50%;margin: 20px;"></div>
+            <!-- <div id="plot2" class="chart-info" style="width:50%;margin: 20px;"></div> -->
+        </div>
+
+
+
+        <!-- <div id="chart-spinner-2" class="pt-4" style="display: none;">
+            <div class="spinner"></div>
+            <div class="spinner-text">Loading</div>
+        </div>
+        <div id="plot2" class="chart-info-2" style="width:50%;margin: 20px;"></div> -->
+    </div>
+
 </div>
-<h2>Portfolio</h2>
-<table id="portfolioTable">
-    <tr>
-        <th>NSE Stocks</th>
-        <th>Weights (in %)</th>
-    </tr>
-    <tr>
-        <td>
-            <select name="stock1" class="select2-selector">
-                <option value='' selected>--Select a stock--</option>
-                {% for company in companies %}
-                <option value="{{company.name}}">{{company.name}}</option>
-                {% endfor %}
-            </select>
-        </td>
-        <td><input type="number" min="0" max="100" name="weight1"></td>
 
-    </tr>
-</table>
-<i class="fa-solid fa-circle-plus"></i>
-<i class="fa-solid fa-circle-minus"></i>
-<div>
-    <button type="button" id="assessButton">Assess Portfolio</button>
-</div>
 
-<div id="plot" style="width:50%;"></div>
+{% endblock %}
 
+{% block scripts %}
 <script>
     let stockCount = 1;
     // Add new experience input field when clicked on add circle (Delegated Event)
-    $(".fa-circle-plus").on("click", function () {
+    $("body").on("click", "#add", function () {
         ++stockCount;
+        $(".action-buttons").remove();
         let html =
-            `<tr>` +
-            `<td>` +
-            `<select name="stock${stockCount}" class="select2-selector">` +
-            `<option value='' selected>--Select a stock--</option>` +
-            `{% for company in companies %}` +
-            `<option value="{{company.name}}">{{company.name}}</option>` +
-            `{% endfor %}` +
-            `</select>` +
-            `</td>` +
-            `<td><input type="number" min="0" max="100" name="weight${stockCount}"></td>` +
-            `</tr>`
-        $("#portfolioTable").append(html);
+            `<div class="row my-2 stock-wrapper">` +
+            `    <div class="col-lg-8 my-2">` +
+            `        <select name="stock${stockCount}" class="select2-selector">` +
+            `            <option value='' selected>--Select a stock--</option>` +
+            `            {% for company in companies %}` +
+            `            <option value="{{company.name}}">{{company.name}}</option>` +
+            `            {% endfor %}` +
+            `        </select>` +
+            `    </div>` +
+            `    <div class="col-lg-2 my-2">` +
+            `        <input type="number" min="0" max="100" class="form-control bg-transparent border-0 text-white weight"` +
+            `            name="weight${stockCount}" placeholder="Weight in %" required>` +
+            `    </div>` +
+            `    <div class="col my-2 action-buttons">` +
+            `        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png" width="90%" /></button>` +
+            `        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png" width="90%" /></button>` +
+            `    </div>` +
+            `</div>`
+        $("#portfolio-wrapper").append(html);
         $('.select2-selector').select2({
             width: '100%',
             dropdownAutoWidth: true
@@ -62,20 +98,27 @@
     });
 
     //Delete respective education field or experience field when clicked on remove button (Delegated Event)
-    $(".fa-circle-minus").on("click", function () {
-        $("#portfolioTable").find("tr:last").remove();
+    $("body").on("click", "#minus", function () {
+        $("#portfolio-wrapper").find(".stock-wrapper").last().remove();
+        let html =
+            `    <div class="col my-2 action-buttons">` +
+            `        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png" width="90%" /></button>` +
+            `        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png" width="90%" /></button>` +
+            `    </div>`
+        $("#portfolio-wrapper").find(".stock-wrapper").last().append(html);
         --stockCount;
     })
 
     //Change the cursor to pointer when it is on add circle icon and delete field icon
-    $(".fa-circle-plus,.fa-circle-minus").on("mouseenter", function () {
+    $("body").on("mouseenter", "#add,#minus", function () {
         $(this).css("cursor", "pointer");
     })
 
-    $("#assessButton").on("click", function (event) {
+    $("#cta").on("click", function (event) {
         validationOnClicked();
         if (!$(".error")[0]) {
-            budget = $("#budget").val();
+            $(`#chart-spinner`).css('display', 'block');
+            $('#output-wrapper').hide();
             stocks = [];
             weights = [];
             for (let i = 0; i < stockCount; i++) {
@@ -87,65 +130,201 @@
                 method: "POST",
                 url: "/api/f1/line-chart",
                 data: {
-                    budget: budget,
                     stocks: stocks,
                     weights: weights,
                 },
                 success: function (data) {
                     data = JSON.parse(data);
-                    let traces = []
-
-                    $.each(data.chart_data.stock_prices, function (stock, stock_prices) {
-                        traces.push({
-                            x: data.chart_data.dates,
-                            y: stock_prices,
-                            name: stock
-                        });
-                    })
+                    console.log(data)
                     let background_color = "rgba(0, 0, 21, 1)"
-                    let layout = {
+                    $(`#chart-spinner`).hide();
+                    $("#output-wrapper").css('display', 'block')
+                    //Sharpe Ratio
+                    $("#sharpe-ratio").css('display', 'block')
+                    if (data.sharpe_ratio < 1) {
+                        $("#sharpe-ratio").text("Bad");
+                    }
+                    else if (data.sharpe_ratio >= 1 && data.sharpe_ratio < 1.99) {
+                        $("#sharpe-ratio").text("Good");
+                    }
+                    else if (data.sharpe_ratio >= 2 && data.sharpe_ratio < 2.99) {
+                        $("#sharpe-ratio").text("Very Good");
+                    }
+                    else if (data.sharpe_ratio >= 3) {
+                        $("#sharpe-ratio").text("Excellent");
+                    }
+
+                    // Efficient Frontier
+                    var plot1_trace1 = {
+                        x: data.chart_data.expected_volatility,
+                        y: data.chart_data.expected_return,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Others',
+                        marker: {
+                            size: 5,
+                            color: "blue"
+                        }
+
+                    };
+                    var plot1_trace2 = {
+                        x: data.ef_ev,
+                        y: data.ef_er,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Efficient Frontier',
+                        marker: {
+                            size: 12,
+                            color: "red"
+                        }
+                    };
+
+                    var plot1_data = [plot1_trace1, plot1_trace2];
+
+                    var plot1_layout = {
                         title: "Line Chart",
                         plot_bgcolor: background_color,
-                        paper_bgcolor: background_color
+                        paper_bgcolor: background_color,
+                        xaxis: {
+                            title: 'Expected Volatility',
+                            autorange: true,
+                        },
+                        yaxis: {
+                            title: 'Expected Return',
+                            autorange: true,
+                        },
+                        title: 'Portfolio Risk VS Returns'
                     };
+                    Plotly.newPlot('plot1', plot1_data, plot1_layout);
 
-                    let config = {
-                        responsive: true
-                    };
+                    // Fbprophet
+                    // for (let i = 1; i <= data.newpreds; i++) {
+                    let i=0;
+                    $.each(data.newpreds,function(key,value){
+                        i++;
+                        var plot2_traces = [
+                            
+                            {
+                                x: data.newpreds[key].ds,
+                                y: data.newpreds[key].actual,
+                                mode: 'markers',
+                                type: 'scatter',
+                                name: 'actual',
+                                marker: {
+                                    size: 4,
+                                    color: "#ADD8E6"
+                                }
+                            },
+                            {
+                                x: data.newpreds[key].ds,
+                                y: data.newpreds[key].yhat,
+                                name: "Forecast",
+                                line: {
+                                    color: "#387fba",
+                                    width: 3
+                                }
+                            },
+                        ]
 
-                    Plotly.newPlot("plot", traces, layout, config)
+                        var plot2_layout = {
+                            plot_bgcolor: background_color,
+                            paper_bgcolor: background_color,
+                            xaxis: {
+                                title: 'Dates',
+                                autorange: true,
+                            },
+                            yaxis: {
+                                title: 'Price',
+                                autorange: true,
+                            },
+                            title: `${key} Price Prediction `
+                        };
+                        let html=
+                        `<div id="plot${1+i}" class="chart-info" style="width:50%;margin: 20px;"></div>`
+
+                        $("#output-wrapper").append(html)
+                        Plotly.newPlot(`plot${1+i}`, plot2_traces, plot2_layout);
+                    })
+
+
+                    // $(`.chart-info`).css('display', 'block');
                 }
             })
         }
     });
 
-    function validationOnClicked() {
-        if ($("#budget").val() == '') {
-            $("#budget").closest("div").find("p").remove();
-            $("#budget").closest("div").append($("<p>").text("This field is required").addClass('error'))
-        }
-        else {
-            $("#budget").closest("div").find("p").remove();
-        }
 
+
+
+
+    function validationOnClicked() {
         for (let i = 0; i < stockCount; i++) {
             if ($(`[name='stock${i + 1}']`).val() == '') {
-                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
-                $(`[name='stock${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+                $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
+                $(`[name='stock${i + 1}']`).closest("div").append($("<p>").text("This field is required").addClass('error'))
             }
             else {
-                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
             }
             if ($(`[name='weight${i + 1}']`).val() == '') {
-                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
-                $(`[name='weight${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+                $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
+                $(`[name='weight${i + 1}']`).closest("div").append($("<p>").text("This field is required").addClass('error'))
             }
             else {
-                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
             }
-
         }
     }
+
+    $('#cta-secondary').on('click', function () {
+        // Swal.fire({
+        //     icon: 'error',
+        //     title: 'File Too Big!',
+        //     text: 'Select a file less than 256KB',
+        // })
+
+        const savePortfolio = $('<form />', {
+            method: 'POST',
+            action: `/save-portfolio/{{current_user.id}}`,
+            enctype: "multipart/form-data"
+        });
+
+        savePortfolio.append('{{ form.hidden_tag() }}');
+
+        const fields = [
+            {
+                label: $('Name'),
+                field: $('<input type="text" name="portfolio_name">'),
+            }
+        ];
+
+        for (const field of fields) {
+            const container = $('<div />', {
+                class: 'd-flex flex-column my-4'
+            });
+            container.append(field.label);
+            const inputField = field.field;
+            if (field.value)
+                inputField.val(field.value);
+            container.append(inputField);
+            savePortfolio.append(container);
+        }
+
+        savePortfolio.append($('<button />', {
+            type: 'submit',
+            class: 'd-none'
+        }));
+        Swal.fire({
+            title: 'Save Portfolio',
+            html: savePortfolio[0],
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            preConfirm: function () {
+                savePortfolio.find('button[type="submit"]').click();
+                return false;
+            },
+        });
+    });
 
 </script>
 {% endblock %}

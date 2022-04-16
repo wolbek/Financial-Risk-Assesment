@@ -1,0 +1,89 @@
+:root {
+    --blue: #3D99FE;
+    --cyan: #6DF0F0;
+    --yellow: #D9F576;
+    --black: #100F15;
+}
+
+body {
+    background-image: url('/static/images/bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: var(--black);
+}
+
+#sign-in-form{
+    min-width: 500px;
+}
+
+
+#sign {
+    border: 1px solid var(--blue);
+    border-radius: 20px;
+    padding: 20px 30px;
+}
+
+#signinbtn {
+    padding: 10px 30px;
+    border: none;
+    color: white;
+    background: linear-gradient(101.02deg, rgba(61, 153, 254, 0.71) 9.26%, rgba(109, 240, 240, 0.71) 107.36%);
+    box-shadow: 2px 4px 10px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#signinbtn:hover {
+    padding: 10px 30px;
+    border: none;
+    color: white;
+    background: linear-gradient(-10deg, rgba(61, 153, 254, 0.71) 9.26%, rgba(109, 240, 240, 0.71) 107.36%);
+    box-shadow: 2px 4px 10px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#cta-secondary {
+    padding: 10px 30px;
+    border: 1px solid var(--cyan);
+    color: white;
+    box-shadow: 2px 4px 10px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#cta-secondary:hover {
+    padding: 10px 30px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    background: transparent;
+    box-shadow: 2px 4px 10px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#signup {
+    color: var(--cyan);
+}
+
+#basic-addon1,
+.ip {
+    border-bottom: 1px solid var(--blue);
+}
+
+@media (max-width: 700px) {
+    body {
+        background-image: url('/static/images/bg-mob.png');
+        background: cover;
+        background-repeat: no-repeat;
+        background-size: 100vw;
+    }
+
+    #signinbtn {
+        padding: 5px;
+    }
+
+    #sign {
+        width: 90vw;
+    }
+}

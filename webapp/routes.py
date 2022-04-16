@@ -2,10 +2,15 @@ import json
 from webapp import app,db,bcrypt
 from flask import redirect, render_template, request, url_for,flash
 from webapp.models import User
-from webapp.forms import SignUpForm,LoginForm
+from webapp.forms import SignUpForm,LoginForm, SavePortfolioForm
 from flask_login import current_user, login_required, login_user, logout_user
 from webapp.global_constants import companies
 import yfinance as yf
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+from fbprophet import Prophet
+
 
 @app.route('/sign_up',methods=['GET','POST'])
 def sign_up():
@@ -58,7 +63,7 @@ def features():
 @app.route("/assess-personalized-portfolio")
 @login_required
 def assess_personalized_portfolio():
-    return render_template('assess_personalized_portfolio.html',companies=companies)
+    return render_template('assess_personalized_portfolio.html',companies=companies,form=SavePortfolioForm())
 
 @app.route("/assess-suggested-portfolio")
 @login_required
@@ -74,20 +79,114 @@ def assess_automated_portfolio():
 @login_required
 def line_chart(): 
     stocks=request.form.getlist('stocks[]')
-    chart_data={
-        "dates":[],
-        "stock_prices":{}
-    }
+    weights=request.form.getlist('weights[]')
+    weights=[int(x) for x in weights]
+    tickers=[]
     for name in stocks:
-        # x is object. So give that object which has 'name'==name. You'll get a list. Access its 1st element. Use its 'symbol'
         symbol=list(filter(lambda x: x['name'] == name, companies))[0]['symbol']
-        stock_prices_data=yf.download(symbol+".NS", period="3mo")['Close']
-        # .astype(str) to convert timestamp to string so that it becomes JSON serializable
-        chart_data['dates']=list(stock_prices_data.index.astype(str))
-        chart_data['stock_prices'][name]=list(stock_prices_data/stock_prices_data[0]*100)
-    # print(chart_data)
-    return json.dumps({"chart_data":chart_data})
+        tickers.append(symbol+".NS")
+    df=yf.download(tickers, start="2014-01-01")   
+    print(df)  
+    df = df['Adj Close']
+    log_returns = np.log(df/df.shift())
 
+    #Sharpe ratio according to given weights
+    print(type(weights[0]))
+    weight = np.array(weights)
+    print("Summmmmm")
+    print(weight.sum())
+    weight = weight/weight.sum()
+    print(weight)
+    exp_rtn = np.sum(log_returns.mean()*weight)*252
+    exp_vol = np.sqrt(np.dot(weight.T, np.dot(log_returns.cov()*252, weight)))
+    sharpe_ratio = exp_rtn / exp_vol
+    print("sharpe_ratio")
+    print(sharpe_ratio)
+
+    #Monte-Carlo simulation
+    n = 10000
+    weights = np.zeros((n, len(tickers)))
+    exp_rtns = np.zeros(n)
+    exp_vols = np.zeros(n)
+    sharpe_ratios = np.zeros(n)
+
+    for i in range(n):
+        weight = np.random.random(len(tickers))
+        weight /= weight.sum()
+        weights[i] = weight
+        
+        exp_rtns[i] = np.sum(log_returns.mean()*weight)*252
+        exp_vols[i] = np.sqrt(np.dot(weight.T, np.dot(log_returns.cov()*252, weight)))
+        sharpe_ratios[i] = exp_rtns[i] / exp_vols[i]
+
+    def normalize(arr, t_min, t_max):
+        norm_arr = []
+        diff = t_max - t_min
+        diff_arr = max(arr) - min(arr)
+        for i in arr:
+            temp = (((i - min(arr))*diff)/diff_arr) + t_min
+            norm_arr.append(temp)
+        return np.asarray(norm_arr)
+    
+    index = np.where(normalize(exp_vols,0,1) <= 1) 
+    chart_data={
+        "expected_return":exp_rtns.tolist(),
+        "expected_volatility":exp_vols.tolist()
+    }
+    ef_er=(exp_rtns[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
+    ef_ev=(exp_vols[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
+
+    preds = {}
+    for ticker in df.columns:
+        stock = df[[ticker]]
+        stock.reset_index(inplace=True)
+        stock = stock.rename(columns={"Date": "ds", ticker: "y"})
+        stock.dropna(axis=0,inplace=True)
+        print(ticker)
+        model=Prophet()
+        model.fit(stock)
+        future_dates=model.make_future_dataframe(periods=1095)
+        prediction=model.predict(future_dates)
+        preds[ticker]=prediction
+        # preds[ticker] = [prediction,model.plot(prediction)]
+    print("-------------------")
+    print(preds)
+    # preds['ds'] = preds['ds'].astype(str)
+    # print(prediction['Date'])
+    # prediction['Date'] = prediction['Date'].astype(str)
+    # prediction.index = prediction.index.astype(str)
+    newpreds={}
+    for ticker in preds:
+        newpreds[ticker]={
+            "ds":preds[ticker]['ds'].astype(str).tolist(),
+            "trend":preds[ticker]['trend'].tolist(),
+            "yhat_lower":preds[ticker]['yhat_lower'].tolist(),
+            "yhat_upper":preds[ticker]['yhat_upper'].tolist(),
+            "trend_lower":preds[ticker]['trend_lower'].tolist(),
+            "trend_upper":preds[ticker]['trend_upper'].tolist(),
+            "additive_terms":preds[ticker]['additive_terms'].tolist(),
+            "additive_terms_lower":preds[ticker]['additive_terms_lower'].tolist(),
+            "additive_terms_upper":preds[ticker]['additive_terms_upper'].tolist(),
+            "weekly":preds[ticker]['weekly'].tolist(),
+            "weekly_lower":preds[ticker]['weekly_lower'].tolist(),
+            "weekly_upper":preds[ticker]['weekly_upper'].tolist(),
+            "yearly":preds[ticker]['yearly'].tolist(),
+            "yearly_lower":preds[ticker]['yearly_lower'].tolist(),
+            "yearly_upper":preds[ticker]['yearly_upper'].tolist(),
+            "multiplicative_terms":preds[ticker]['multiplicative_terms'].tolist(),
+            "multiplicative_terms_lower":preds[ticker]['multiplicative_terms_lower'].tolist(),
+            "multiplicative_terms_upper":preds[ticker]['multiplicative_terms_upper'].tolist(),
+            "yhat":preds[ticker]['yhat'].tolist(),
+            "actual":df[ticker].tolist()
+        }
+        
+
+    return json.dumps({"sharpe_ratio":sharpe_ratio,"chart_data":chart_data,"ef_er":ef_er,"ef_ev":ef_ev,"newpreds":newpreds})
+
+@app.route("/save-portfolio/<int:user_id>")
+@login_required
+def save_portfolio(user_id):
+    return render_template('assess_personalized_portfolio.html',companies=companies,form=SavePortfolioForm())
 
 
 

@@ -6,13 +6,10 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
 app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
-
 app.config.from_mapping(
     SQLALCHEMY_DATABASE_URI=config('SQLALCHEMY_DATABASE_URI'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SECRET_KEY=config('SECRET_KEY'),
-    UPLOAD_FOLDER=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads'),
 )
 
 db=SQLAlchemy(app)

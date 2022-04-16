@@ -46,17 +46,10 @@
         <div id="output-wrapper" style="display:none;">
             <p style="text-align:center;margin-top: 30px;">Till Date Return On Investment:</p>
             <h1 id="sharpe-ratio" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
-            <div id="plot1" class="chart-info" style="width:50%;margin: 20px;"></div>
+            <div id="plot1" class="chart-info" style="width:94%;margin: 20px;"></div>
+
             <!-- <div id="plot2" class="chart-info" style="width:50%;margin: 20px;"></div> -->
         </div>
-
-
-
-        <!-- <div id="chart-spinner-2" class="pt-4" style="display: none;">
-            <div class="spinner"></div>
-            <div class="spinner-text">Loading</div>
-        </div>
-        <div id="plot2" class="chart-info-2" style="width:50%;margin: 20px;"></div> -->
     </div>
 
 </div>
@@ -115,16 +108,16 @@
     })
 
     $("#cta").on("click", function (event) {
-        validationOnClicked();
+        stocks = [];
+        weights = [];
+        for (let i = 0; i < stockCount; i++) {
+            stocks.push($(`[name='stock${i + 1}']`).val());
+            weights.push($(`[name='weight${i + 1}']`).val());
+        }
+        validationOnClicked(weights);
         if (!$(".error")[0]) {
             $(`#chart-spinner`).css('display', 'block');
             $('#output-wrapper').hide();
-            stocks = [];
-            weights = [];
-            for (let i = 0; i < stockCount; i++) {
-                stocks.push($(`[name='stock${i + 1}']`).val());
-                weights.push($(`[name='weight${i + 1}']`).val());
-            }
 
             $.ajax({
                 method: "POST",
@@ -136,7 +129,9 @@
                 success: function (data) {
                     data = JSON.parse(data);
                     console.log(data)
-                    let background_color = "rgba(0, 0, 21, 1)"
+                    let background_color = "#000517"
+                    // let background_color = "rgba(0, 0, 21, 1)"
+                    let grid_color = "#383838"
                     $(`#chart-spinner`).hide();
                     $("#output-wrapper").css('display', 'block')
                     //Sharpe Ratio
@@ -182,34 +177,45 @@
                     var plot1_data = [plot1_trace1, plot1_trace2];
 
                     var plot1_layout = {
-                        title: "Line Chart",
                         plot_bgcolor: background_color,
                         paper_bgcolor: background_color,
+                        autosize: true,
                         xaxis: {
                             title: 'Expected Volatility',
                             autorange: true,
+                            gridcolor: grid_color,
                         },
                         yaxis: {
                             title: 'Expected Return',
                             autorange: true,
+                            gridcolor: grid_color,
                         },
-                        title: 'Portfolio Risk VS Returns'
+                        title: 'Portfolio Risk VS Returns',
+                        font: {
+                            size: 12,
+                            color: '#7f7f7f'
+                        }
                     };
-                    Plotly.newPlot('plot1', plot1_data, plot1_layout);
+                    let plot1_config = {
+                        responsive: true,
+                    }
+
+                    Plotly.newPlot('plot1', plot1_data, plot1_layout, plot1_config);
+
 
                     // Fbprophet
                     // for (let i = 1; i <= data.newpreds; i++) {
-                    let i=0;
-                    $.each(data.newpreds,function(key,value){
+                    let i = 0;
+                    $.each(data.newpreds, function (key, value) {
                         i++;
-                        var plot2_traces = [
-                            
+                        var plot_traces = [
+
                             {
                                 x: data.newpreds[key].ds,
                                 y: data.newpreds[key].actual,
                                 mode: 'markers',
                                 type: 'scatter',
-                                name: 'actual',
+                                name: 'Actual',
                                 marker: {
                                     size: 4,
                                     color: "#ADD8E6"
@@ -226,25 +232,49 @@
                             },
                         ]
 
-                        var plot2_layout = {
+                        var plot_layout = {
                             plot_bgcolor: background_color,
                             paper_bgcolor: background_color,
+                            autosize: true,
                             xaxis: {
                                 title: 'Dates',
                                 autorange: true,
+                                gridcolor: grid_color,
                             },
                             yaxis: {
                                 title: 'Price',
                                 autorange: true,
+                                gridcolor: grid_color,
                             },
-                            title: `${key} Price Prediction `
+                            title: `${key} Price Prediction `,
+                            font: {
+                                size: 12,
+                                color: '#7f7f7f'
+                            }
                         };
-                        let html=
-                        `<div id="plot${1+i}" class="chart-info" style="width:50%;margin: 20px;"></div>`
+                        let plot_config = {
+                            responsive: true,
+                        }
+                        let html =
+                            `<div id="plot${1 + i}" class="chart-info" style="width:95%;margin: 20px;"></div>`
 
                         $("#output-wrapper").append(html)
-                        Plotly.newPlot(`plot${1+i}`, plot2_traces, plot2_layout);
+                        Plotly.newPlot(`plot${1 + i}`, plot_traces, plot_layout, plot_config);
+
                     })
+                    window.onresize = function () {
+                        Plotly.relayout('plot1', {
+                            'xaxis.autorange': true,
+                            'yaxis.autorange': true
+                        });
+                        for (let j = 1; j <= i; j++) {
+                            Plotly.relayout(`plot${1 + j}`, {
+                                'xaxis.autorange': true,
+                                'yaxis.autorange': true
+                            });
+                        }
+
+                    };
 
 
                     // $(`.chart-info`).css('display', 'block');
@@ -257,7 +287,7 @@
 
 
 
-    function validationOnClicked() {
+    function validationOnClicked(weights) {
         for (let i = 0; i < stockCount; i++) {
             if ($(`[name='stock${i + 1}']`).val() == '') {
                 $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
@@ -273,6 +303,19 @@
             else {
                 $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
             }
+            let sum=0
+            for (let i = 0; i < weights.length; i++) {
+                sum += parseInt(weights[i]);
+            }
+            //Need at least two stocks error?
+            //zomato with others doesn't work because it's past data doesn't start with 2014
+            if(sum!=100){
+                $("#portfolio-wrapper").find(".weighterror").remove();
+                $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100.").addClass('error weighterror'))
+            }else{
+                $("#portfolio-wrapper").find(".weighterror").remove();
+            }
+
         }
     }
 

@@ -25,7 +25,7 @@ def sign_up():
         db.session.add(user)
         db.session.commit()
         login_user(user)
-        flash('Registered Successfully.You have logged into the website',category='successful')
+        flash('Registered Successfully.You have signed into the website',category='successful')
         return redirect(url_for('home'))
     # Forms will handle the validations. So if it's not validated, the errors will be stored in form.errors and will be passed to the register.html
     return render_template('sign_up.html',form=form)
@@ -39,7 +39,7 @@ def login():
         user=User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password,form.password.data):
             login_user(user)
-            flash('You have logged in successfully',category='successful')
+            flash('You have signed in successfully',category='successful')
             return redirect(url_for('home'))
         else:
             flash('Login unsuccessful. Please check email and password',category='danger')
@@ -49,16 +49,12 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
+    flash('You have signed out successfully',category='successful')
     return redirect(url_for('home'))
 
 @app.route("/")
 def home():
     return render_template('home.html')
-
-@app.route("/features")
-@login_required
-def features():
-    return render_template('features.html')
 
 @app.route("/assess-personalized-portfolio")
 @login_required
@@ -86,22 +82,16 @@ def line_chart():
         symbol=list(filter(lambda x: x['name'] == name, companies))[0]['symbol']
         tickers.append(symbol+".NS")
     df=yf.download(tickers, start="2014-01-01")   
-    print(df)  
+    # print(df)  
     df = df['Adj Close']
     log_returns = np.log(df/df.shift())
 
     #Sharpe ratio according to given weights
-    print(type(weights[0]))
-    weight = np.array(weights)
-    print("Summmmmm")
-    print(weight.sum())
-    weight = weight/weight.sum()
-    print(weight)
+    weight = np.array(weights)   
+    weight = weight/weight.sum() 
     exp_rtn = np.sum(log_returns.mean()*weight)*252
     exp_vol = np.sqrt(np.dot(weight.T, np.dot(log_returns.cov()*252, weight)))
     sharpe_ratio = exp_rtn / exp_vol
-    print("sharpe_ratio")
-    print(sharpe_ratio)
 
     #Monte-Carlo simulation
     n = 10000
@@ -148,45 +138,44 @@ def line_chart():
         future_dates=model.make_future_dataframe(periods=1095)
         prediction=model.predict(future_dates)
         preds[ticker]=prediction
-        # preds[ticker] = [prediction,model.plot(prediction)]
-    print("-------------------")
-    print(preds)
-    # preds['ds'] = preds['ds'].astype(str)
-    # print(prediction['Date'])
-    # prediction['Date'] = prediction['Date'].astype(str)
-    # prediction.index = prediction.index.astype(str)
+   
     newpreds={}
     for ticker in preds:
         newpreds[ticker]={
-            "ds":preds[ticker]['ds'].astype(str).tolist(),
-            "trend":preds[ticker]['trend'].tolist(),
-            "yhat_lower":preds[ticker]['yhat_lower'].tolist(),
-            "yhat_upper":preds[ticker]['yhat_upper'].tolist(),
-            "trend_lower":preds[ticker]['trend_lower'].tolist(),
-            "trend_upper":preds[ticker]['trend_upper'].tolist(),
-            "additive_terms":preds[ticker]['additive_terms'].tolist(),
-            "additive_terms_lower":preds[ticker]['additive_terms_lower'].tolist(),
-            "additive_terms_upper":preds[ticker]['additive_terms_upper'].tolist(),
-            "weekly":preds[ticker]['weekly'].tolist(),
-            "weekly_lower":preds[ticker]['weekly_lower'].tolist(),
-            "weekly_upper":preds[ticker]['weekly_upper'].tolist(),
-            "yearly":preds[ticker]['yearly'].tolist(),
-            "yearly_lower":preds[ticker]['yearly_lower'].tolist(),
-            "yearly_upper":preds[ticker]['yearly_upper'].tolist(),
-            "multiplicative_terms":preds[ticker]['multiplicative_terms'].tolist(),
-            "multiplicative_terms_lower":preds[ticker]['multiplicative_terms_lower'].tolist(),
-            "multiplicative_terms_upper":preds[ticker]['multiplicative_terms_upper'].tolist(),
+            "ds":preds[ticker]['ds'].astype(str).tolist(),                    
             "yhat":preds[ticker]['yhat'].tolist(),
             "actual":df[ticker].tolist()
         }
         
 
     return json.dumps({"sharpe_ratio":sharpe_ratio,"chart_data":chart_data,"ef_er":ef_er,"ef_ev":ef_ev,"newpreds":newpreds})
+    # chart_data={
+    #     "expected_return":[1,2,3],
+    #     "expected_volatility":[1,2,3],
+    # }
+    # newpreds={
+    #     "WIPRO.NS":{
+    #         "ds":['2013-12-31', '2014-01-02', '2014-01-03'],
+    #         "yhat":[1,2,3],
+    #         "actual":[2,3,5]
+    #     },
+    #     "JUBS.NS":{
+    #         "ds":['2013-12-31', '2014-01-02', '2014-01-03'],
+    #         "yhat":[1,2,3],
+    #         "actual":[2,3,5]
+    #     }
+    # }
+    # return json.dumps({"sharpe_ratio":1.2,"chart_data":chart_data,"ef_er":2,"ef_ev":2,"newpreds":newpreds})
 
 @app.route("/save-portfolio/<int:user_id>")
 @login_required
 def save_portfolio(user_id):
     return render_template('assess_personalized_portfolio.html',companies=companies,form=SavePortfolioForm())
+
+@app.route("/search-company")
+@login_required
+def search_company():
+    return render_template('search_company.html')
 
 
 

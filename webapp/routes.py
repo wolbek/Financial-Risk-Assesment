@@ -1,7 +1,7 @@
 import json
 from webapp import app,db,bcrypt
 from flask import redirect, render_template, request, url_for,flash,session
-from webapp.models import Company, SavedPortfolios, User
+from webapp.models import Company, User
 from webapp.forms import SignUpForm,LoginForm
 from flask_login import current_user, login_required, login_user, logout_user
 from webapp.global_constants import companies
@@ -29,7 +29,7 @@ def sign_up():
         db.session.commit()
         login_user(user)
         flash('Registered Successfully.You have signed into the website',category='successful')
-        return redirect(url_for('home'))
+        return redirect(url_for('assess_personalized_portfolio'))
     # Forms will handle the validations. So if it's not validated, the errors will be stored in form.errors and will be passed to the register.html
     return render_template('sign_up.html',form=form)
 
@@ -43,7 +43,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password,form.password.data):
             login_user(user)
             flash('You have signed in successfully',category='successful')
-            return redirect(url_for('home'))
+            return redirect(url_for('assess_personalized_portfolio'))
         else:
             flash('Login unsuccessful. Please check email and password',category='danger')
     # Forms will handle the validations. So if it's not validated, the errors will be stored in form.errors and will be passed to the register.html
@@ -61,27 +61,7 @@ def home():
 
 @app.route("/assess-personalized-portfolio",methods=['GET','POST'])
 @login_required
-def assess_personalized_portfolio():
-    if request.method=="POST":  
-        stocks=[]
-        for i in range(1,int(request.form['stockCount'])+1):                        
-            if request.form['stock'+str(i)]=="" or request.form['weight'+str(i)]=="":
-                flash('Some fields are not selected!', 'error')
-                return render_template('create_faculty.html')
-            elif request.form['stock'+str(i)] in stocks:
-                flash('Some stocks are repeated!', 'error')
-                return render_template('create_faculty.html')
-            else:
-                stocks.append(request.form['stock'+str(i)])
-        portfolio_stocks={}
-        for i in range(1,int(request.form['stockCount'])+1): 
-            portfolio_stocks[request.form['stock'+str(i)]]=request.form['weight'+str(i)]      
-        save_portfolio=SavedPortfolios(user_id=session['id'],portfolio_name=request.form['name'],portfolio_stocks=portfolio_stocks)
-        db.session.add(save_portfolio)
-        db.session.commit()
-        flash('Portfolio is saved successfully', 'success')
-        return redirect(url_for('saved_portfolios'))
-
+def assess_personalized_portfolio():  
     return render_template('assess_personalized_portfolio.html')
 
 @app.route("/api/f1/line-chart",methods=['GET','POST'])
@@ -130,15 +110,8 @@ def line_chart():
             temp = (((i - min(arr))*diff)/diff_arr) + t_min
             norm_arr.append(temp)
         return np.asarray(norm_arr)
-    
-    index = np.where(normalize(exp_vols,0,1) <= 1) 
-    chart_data={
-        "expected_return":exp_rtns.tolist(),
-        "expected_volatility":exp_vols.tolist()
-    }
-    ef_er=(exp_rtns[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
-    ef_ev=(exp_vols[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
 
+    #Fbprophet
     preds = {}
     for ticker in df.columns:
         stock = df[[ticker]]
@@ -152,19 +125,40 @@ def line_chart():
         prediction=model.predict(future_dates)        
         preds[ticker]=prediction
 
+    f_preds_changes = []
+    for x in preds:
+        f_predict = preds[x][-30:][['yhat','yhat_upper']].mean().mean()
+        now = df[x][-1]
+        print(x,f"percentage change %:{(f_predict-now)/now*100}")
+        f_preds_changes.append((f_predict-now)/now)
+
    
-    newpreds={}
+    f_preds_data={}
     for ticker in preds:
-        newpreds[ticker]={
+        f_preds_data[ticker]={
             "ds":preds[ticker]['ds'].astype(str).tolist(), 
             "yhat_lower":preds[ticker]['yhat_lower'].tolist(),
             "yhat_upper":preds[ticker]['yhat_upper'].tolist(),                   
             "yhat":preds[ticker]['yhat'].tolist(),
             "actual":df[ticker].dropna().tolist()
         }      
-        
 
-    return json.dumps({"sharpe_ratio":sharpe_ratio,"chart_data":chart_data,"ef_er":ef_er,"ef_ev":ef_ev,"newpreds":newpreds})
+    hybrid_ratios = np.array([sum(x) for x in weights*f_preds_changes]) + sharpe_ratios
+    index = np.where(normalize(exp_vols,0,1) <= 1) 
+    risk_return_chart_data={
+        "expected_return":exp_rtns.tolist(),
+        "expected_volatility":exp_vols.tolist(),
+        "ev_hb":exp_vols[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist(),
+        "er_hb":exp_rtns[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist()
+    }
+    # ef1_ev=(exp_vols[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
+    # ef1_er=(exp_rtns[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
+    future_prediction_chart_data={
+        "f_preds_changes":f_preds_changes,
+        "f_preds_data":f_preds_data
+    }
+
+    return json.dumps({"sharpe_ratio":sharpe_ratio,"risk_return_chart_data":risk_return_chart_data,"future_prediction_chart_data":future_prediction_chart_data})
     # chart_data={
     #     "expected_return":[1,2,3],
     #     "expected_volatility":[1,2,3],
@@ -183,23 +177,12 @@ def line_chart():
     # }
     # return json.dumps({"sharpe_ratio":1.2,"chart_data":chart_data,"ef_er":2,"ef_ev":2,"newpreds":newpreds})
 
-@app.route("/saved-portfolios")
-@login_required
-def saved_portfolios():
-    print()
-    return render_template('saved_portfolios.html')
-
 @app.route("/search-company",methods=['GET','POST'])
 @login_required
-def search_company():
-    if request.method=="POST":       
-        symbol=list(filter(lambda x: x['name'] == request.form['company'] , companies))[0]['symbol']+".NS"
-        company=Company.query.filter_by(ticker=symbol).first()
-    else:
-        symbol="RELIANCE.NS"
-        company=Company.query.filter_by(ticker=symbol).first()
-    
-    return render_template('search_company.html',company=company,symbol=symbol)
+def search_company():    
+    ticker=request.args.get('company','RELIANCE.NS')
+    company=Company.query.filter_by(ticker=ticker).first()   
+    return render_template('search_company.html',company=company,ticker=ticker)
 
 
 

@@ -9,7 +9,7 @@
 {% block main %}
 <div class="col col-lg-9 col-sm-12 order-lg-first">
     <div class="row" id="main-div">
-        <h3 id="main-heading">{{company.info.profile.company_name}} ({{symbol}})</h3>
+        <h3 id="main-heading">{{company.info.profile.company_name}} ({{ticker}})</h3>
         <!-- <p id="sub-heading">NSE - NSE Real Time Price. Currency in INR</p>
         <div>
             <h1 id="current-price">3,664.95 </h1><span id="percent-change"> -26.15 (-0.71%)</span>
@@ -168,27 +168,41 @@
                 {% for item in company.info.news %}
                 <div class="row p-2">
                     <div class="col-lg-3" id="news-image-div">
+                        <!-- {%if item[1]=="https://s.yimg.com/g/images/spaceball.gif"%}
+                        <img id="news-image"
+                            src="https://realsound.jp/wp-content/uploads/2020/08/rs-font-thumbnail_news_300.jpg"
+                            alt="news image" />
+                        {% else %}
+                        <img id="news-image" src="{{item[1]}}" alt="news image" />
+                        {% endif %} -->
                         <img id="news-image"
                             src="https://realsound.jp/wp-content/uploads/2020/08/rs-font-thumbnail_news_300.jpg"
                             alt="news image" />
                     </div>
+
                     <div class="col-lg-8" id="news-div">
-                        <h6 id="news-heading">{{item[2]}}</h6>
-                        <p id="news-sub-text">{{item[3]}}</p>
+                        <p style="color:#a5a5a5">{{item[2]}}</p>
+                        <a href="https://finance.yahoo.com/{{item[0]}}">
+                            <h6 id="news-heading">{{item[3]}}</h6>
+                        </a>
+                        <!-- <p id="news-sub-text">{{item[4]}}</p> -->
+                        <p id="news-sub-text">{{item[4] | truncate(100)}}</p>
                     </div>
+
                 </div>
                 {% endfor %}
             </div>
             <div id="Profile" class="tabcontent">
                 <div class="container-fluid p-2">
                     <div class="row">
-                        <h5 class="mt-2 mb-3 text-light"><b id="name-of-company-under-profile">{{company.info.profile.company_name}}</b></h5>
+                        <h5 class="mt-2 mb-3 text-light"><b
+                                id="name-of-company-under-profile">{{company.info.profile.company_name}}</b></h5>
                         <div class="col-lg-12 my-2">
                             <p id="address-under-profile">{{company.info.profile.address}}</p>
                             <!-- <p><a href="" id="website-link-under-profile">https://www.tcs.com</a></p> -->
                         </div>
                         <div class="col-lg-6 my-2">
-                            <p id="sector-under-profile">{{company.info.profile.sector}}</p>                        
+                            <p id="sector-under-profile">{{company.info.profile.sector}}</p>
                             <!-- <p id="sector-under-profile">Sector(s): Technology</p>
                             <p id="ind-under-profile">Industry: Information Technology Services</p>
                             <p id="full-emp-under-profile">Full Time Employees: 556,986</p> -->
@@ -214,7 +228,7 @@
                                         <td>{{item[1]}}</td>
                                         <td>{{item[2]}}</td>
                                         <td>{{item[3]}}</td>
-                                        <td>{{item[4]}}</td>                                        
+                                        <td>{{item[4]}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -226,7 +240,7 @@
                         <h5 class="text-light">Description</h5>
                         <p id="description-under-profile">{{company.info.profile.description}}</p>
                     </div>
-                    
+
                     <div class="row">
                         <h5 class="text-light">Map Location</h5>
                         <div id="map-under-profile">{{company.info.profile.map | safe}}</div>
@@ -241,7 +255,7 @@
     </div>
 </div>
 <div class="col col-lg-3" id="rec-act-pp-al-wt">
-    
+
     <div class="row" id="people-also-watch-div">
         <div class="col" id="people-also-watch">
             <h5 id="heading">People Also Watch</h5>
@@ -261,7 +275,7 @@
                     </div>
                 </div>
                 {% endfor %}
-                
+
                 <div class="row p-2">
                     <div class="col bg-transparent mx-2" id="name">
                         <b><a href=""

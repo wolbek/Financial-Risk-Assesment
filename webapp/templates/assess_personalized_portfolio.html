@@ -11,37 +11,34 @@
     <div class="row" id="main-div">
         <h2 id="main-heading">Build Your Portfolio</h2>
         <p id="sub-heading">Enter your NSE stocks and their weights to assess the portfolio</p>
-        <form method="POST" id="portfolio-form">
-            <div id="portfolio-wrapper">
-                <div class="row my-2 stock-wrapper">
-                    <div class="col-lg-8 my-2">
-                        <select name="stock1" class="select2-selector">
-                            <option value='' selected>--Select a stock--</option>
-                            {% for company in companies %}
-                            <option value="{{company.name}}">{{company.name}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-lg-2 my-2">
-                        <input type="number" min="0" max="100"
-                            class="form-control bg-transparent border-0 text-white weight" name="weight1"
-                            placeholder="Weight in %" required>
-                    </div>
-                    <div class="col my-2 action-buttons">
-                        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
-                                width="90%" /></button>
-                        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
-                                width="90%" /></button>
-                    </div>
+        <div id="portfolio-wrapper">
+            <div class="row my-2 stock-wrapper">
+                <div class="col-lg-8 my-2">
+                    <select name="stock1" class="select2-selector">
+                        <option value='' selected>--Select a stock--</option>
+                        {% for company in companies %}
+                        <option value="{{company.name}}">{{company.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 my-2">
+                    <input type="number" min="0" max="100"
+                        class="form-control bg-transparent border-0 text-white weight" name="weight1"
+                        placeholder="Weight in %" required>
+                </div>
+                <div class="col my-2 action-buttons">
+                    <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
+                            width="90%" /></button>
+                    <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
+                            width="90%" /></button>
                 </div>
             </div>
-            <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
-                <button type="button" class="btn assessButton" id="cta">Assess portfolio</button>
-                <button class="btn btn-outline-primary" type="submit" id="cta-secondary">Save portfolio</button>
-            </div>
-            <input type="hidden" id="stockCount" name="stockCount" value="">
-            <input type="hidden" name="name" value="Portfolio">
-        </form>
+        </div>
+        <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
+            <button type="button" class="btn assessButton" id="cta">Assess portfolio</button>
+            <!-- <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button> -->
+        </div>
+        <input type="hidden" name="name" value="Portfolio">
 
         <div id="chart-spinner" class="pt-4" style="display: none;">
             <div class="spinner"></div>
@@ -64,6 +61,7 @@
 {% block scripts %}
 <script>
     let stockCount = 1;
+    let i = 0;
     // Add new experience input field when clicked on add circle (Delegated Event)
     $("body").on("click", "#add", function () {
         ++stockCount;
@@ -122,6 +120,10 @@
         if (!$(".error")[0]) {
             $(`#chart-spinner`).css('display', 'block');
             $('#output-wrapper').hide();
+            for (let j = 2; j <= i; j++) {
+                $(`#plot${j}`).remove();
+            }
+            i = 2;
 
             $.ajax({
                 method: "POST",
@@ -155,11 +157,11 @@
 
                     // Efficient Frontier
                     var plot1_trace1 = {
-                        x: data.chart_data.expected_volatility,
-                        y: data.chart_data.expected_return,
+                        x: data.risk_return_chart_data.expected_volatility,
+                        y: data.risk_return_chart_data.expected_return,
                         mode: 'markers',
                         type: 'scatter',
-                        name: 'Others',
+                        name: 'Other ratio',
                         marker: {
                             size: 5,
                             color: "blue"
@@ -167,11 +169,11 @@
 
                     };
                     var plot1_trace2 = {
-                        x: data.ef_ev,
-                        y: data.ef_er,
+                        x: data.risk_return_chart_data.ev_hb,
+                        y: data.risk_return_chart_data.er_hb,
                         mode: 'markers',
                         type: 'scatter',
-                        name: 'Efficient Frontier',
+                        name: 'Ratio for portfolio with maximum efficiency ',
                         marker: {
                             size: 12,
                             color: "red"
@@ -209,13 +211,13 @@
 
                     // Fbprophet
                     // for (let i = 1; i <= data.newpreds; i++) {
-                    let i = 0;
-                    $.each(data.newpreds, function (key, value) {
-                        i++;
+                    console.log(data.future_prediction_chart_data.f_preds_changes)
+                    $.each(data.future_prediction_chart_data.f_preds_data, function (key, value) {
+
                         var plot_traces = [
                             {
-                                x: data.newpreds[key].ds,
-                                y: data.newpreds[key].yhat_upper,
+                                x: value['ds'],
+                                y: value['yhat_upper'],
                                 name: "Upper uncertainty interval",
                                 line: {
                                     color: "#969696",
@@ -224,8 +226,8 @@
                                 // mode: 'none'
                             },
                             {
-                                x: data.newpreds[key].ds,
-                                y: data.newpreds[key].yhat_lower,
+                                x: value['ds'],
+                                y: value['yhat_lower'],
                                 name: "Lower uncertainty interval",
                                 line: {
                                     color: "#969696",
@@ -235,8 +237,8 @@
                             },
 
                             {
-                                x: data.newpreds[key].ds,
-                                y: data.newpreds[key].actual,
+                                x: value['ds'],
+                                y: value['actual'],
                                 mode: 'markers',
                                 type: 'scatter',
                                 name: 'Actual',
@@ -246,8 +248,8 @@
                                 }
                             },
                             {
-                                x: data.newpreds[key].ds,
-                                y: data.newpreds[key].yhat,
+                                x: value['ds'],
+                                y: value['yhat'],
                                 name: "Forecast",
                                 line: {
                                     color: "#387fba",
@@ -280,42 +282,37 @@
                             responsive: true,
                         }
                         let html =
-                            `<div id="plot${1 + i}" class="chart-info" style="width:95%;margin: 20px;"></div>`
+                            `<div id="plot${i}" class="chart-info" style="width:95%;margin: 20px;"></div>`
 
                         $("#output-wrapper").append(html)
-                        Plotly.newPlot(`plot${1 + i}`, plot_traces, plot_layout, plot_config);
+                        Plotly.newPlot(`plot${i}`, plot_traces, plot_layout, plot_config);
 
+                        i++;
                     })
+                    //Showing percentage change (put inside above loop when needed to show)
+                    // html=
+                    // `<p>${key} percentage change (%): ${data.future_prediction_chart_data.f_preds_changes[i-2]}</p>`
+                    // $(`#plot${i}`).append(html)
                     window.onresize = function () {
                         Plotly.relayout('plot1', {
                             'xaxis.autorange': true,
                             'yaxis.autorange': true
                         });
-                        for (let j = 1; j <= i; j++) {
-                            Plotly.relayout(`plot${1 + j}`, {
+                        for (let j = 2; j <= i; j++) {
+                            Plotly.relayout(`plot${j}`, {
                                 'xaxis.autorange': true,
                                 'yaxis.autorange': true
                             });
                         }
 
                     };
-
-
-                    // $(`.chart-info`).css('display', 'block');
                 }
             })
         }
     });
 
-    $("#portfolio-form").on("submit",function(event){
-        event.preventDefault();
-        $("#stockCount").val(stockCount);
-        $('#portfolio-form').submit();
-    })
-
-
-
     function validationOnClicked(weights) {
+        //Fields empty error
         for (let i = 0; i < stockCount; i++) {
             if ($(`[name='stock${i + 1}']`).val() == '') {
                 $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
@@ -331,22 +328,47 @@
             else {
                 $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
             }
-            let sum = 0
-            for (let i = 0; i < weights.length; i++) {
-                sum += parseInt(weights[i]);
+        }
+        //Stock selected more than one time error
+        let stock_repeated = false;
+        let stock_list = []
+        for (let i = 0; i <= stockCount; i++) {
+            if (stock_list.includes($(`[name='stock${i}']`).val())) {
+                stock_repeated = true;
+                break;
             }
-            //Need at least two stocks error?
-            //zomato with others doesn't work because it's past data doesn't start with 2014
-            if (sum != 100) {
-                $("#portfolio-wrapper").find(".weighterror").remove();
-                $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100.").addClass('error weighterror'))
-            } else {
-                $("#portfolio-wrapper").find(".weighterror").remove();
+            else {
+                stock_list.push($(`[name='stock${i}']`).val())
             }
+        }
+        if (stock_repeated == true) {
+            $("#portfolio-wrapper").find(".repeatedError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Some stocks are repeated").addClass('error repeatedError'))
+        }
+        else {
+            $("#portfolio-wrapper").find(".repeatedError").remove();
+        }
+        //Less than two stock error
+        if (stockCount <= 1) {
+            $("#portfolio-wrapper").find(".stockCountError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Enter more than one stock in portfolio").addClass('error stockCountError'))
 
+        } else {
+            $("#portfolio-wrapper").find(".stockCountError").remove();
+        }
+        //Weight sum is not 100 error
+        let sum = 0
+        for (let i = 0; i < weights.length; i++) {
+            sum += parseInt(weights[i]);
+        }
+        if (sum != 100) {
+            $("#portfolio-wrapper").find(".weightError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100").addClass('error weightError'))
+        } else {
+            $("#portfolio-wrapper").find(".weightError").remove();
         }
     }
-    
+
     $(".border-start").removeClass('border-start')
     $("#tabs").find(".assess-personalized-portfolio").addClass("border-start")
 

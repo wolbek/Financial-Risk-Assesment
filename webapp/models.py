@@ -19,7 +19,6 @@ class User(db.Model,UserMixin):
     id=db.Column(db.Integer(),primary_key=True)
     email=db.Column(db.String(length=255),nullable=False,unique=True)
     password=db.Column(db.String(length=60),nullable=False)
-    saved_portfolios=db.relationship('SavedPortfolios',cascade="all,delete",backref='User',lazy=True)
     def set_password(self, password):
         self.password = hashpw(password.encode('utf-8'), gensalt()).decode('ascii')
 
@@ -29,11 +28,6 @@ class User(db.Model,UserMixin):
 class Company(db.Model):
     ticker = db.Column(db.String(500), nullable=False, primary_key=True)
     info = db.Column(db.JSON, nullable=False,server_default="{}")
-
-class SavedPortfolios(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True)
-    portfolio_name= db.Column(db.String(500), nullable=False, server_default="")
-    portfolio_stocks=db.Column(db.JSON, nullable=False,server_default="{}")
 
 @click.command('init-db')
 @with_appcontext
@@ -157,12 +151,15 @@ def seed_data_command():
                 for sou in soup.findAll('li'):
                     try:
                         node = []
+                        link=sou.find('a')['href']
+                        node.append(link)  
                         img = sou.find('img')
                         if img:
                             node.append(img.get('src'))
                         else:
                             node.append("https://elegalmetrology.jharkhand.gov.in/japnet/images/news.jpg")
                         time = sou.find('div', {"class": 'C(#959595) Fz(11px) D(ib) Mb(6px)'}).find_all('span')[1].text
+                        
                         heading = sou.find('a').text
                         para = sou.find('p').text
                         node.append(time)                   

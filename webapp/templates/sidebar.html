@@ -24,13 +24,7 @@
                             title="Home">
                             <img src="/static/images/home-icon.png" width="22px" />
                         </a>
-                    </div>
-                    <div class="row mx-0 my-4 text-center saved-portfolios">
-                        <a href="{{url_for('saved_portfolios')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Saved portfolios">
-                            <img src="/static/images/Bookmark_fill.png" width="22px" />
-                        </a>
-                    </div>
+                    </div>                    
                     <div class="row mx-0 my-4 text-center assess-personalized-portfolio border-start">
                         <a href="{{url_for('assess_personalized_portfolio')}}" class="btn" data-bs-toggle="tooltip"
                             data-bs-placement="right" title="Portfolio">
@@ -69,16 +63,7 @@
                             <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('home')}}"
                                     style="color: #a5a5a5; text-decoration: none;">Home</a></h4>
                         </div>
-                    </div>
-                    <div class="row mx-0 my-4">
-                        <div class="col-1">
-                            <img class="mt-0" src="/static/images/Bookmark_fill.png" width="22px" />
-                        </div>
-                        <div class="col">
-                            <h4 class="mx-2 mt-3 d-inline text-white saved-portfolios"><a href="{{url_for('saved_portfolios')}}"
-                                    style="color: #a5a5a5; text-decoration: none;">Saved</a></h4>
-                        </div>
-                    </div>
+                    </div>                    
                     <div class="row mx-0 my-4">
                         <div class="col-1">
                             <img class="mt-0" src="/static/images/portfolio-icon.png" width="22px" />
@@ -146,7 +131,7 @@
                     </div>
                 </div> -->
                 <div class="col">
-                    <form method="POST" action="{{url_for('search_company')}}">
+                    <form method="GET" action="{{url_for('search_company')}}">
                     <div class="col" id="search-bar">
                         <div class="row mb-3 ">
 
@@ -154,7 +139,7 @@
                                 <select name="company" class="select2-selector" id="search-bar-select-field">
                                     <option value='' selected>Search</option>
                                     {% for company in companies %}
-                                    <option value="{{company.name}}">{{company.name}}</option>
+                                    <option value="{{company.symbol}}.NS">{{company.name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>

@@ -156,7 +156,7 @@
                     }
 
                     // Efficient Frontier
-                    var plot1_trace1 = {
+                    var plot1_traces = [{
                         x: data.risk_return_chart_data.expected_volatility,
                         y: data.risk_return_chart_data.expected_return,
                         mode: 'markers',
@@ -167,8 +167,8 @@
                             color: "blue"
                         }
 
-                    };
-                    var plot1_trace2 = {
+                    },
+                    {
                         x: data.risk_return_chart_data.ev_hb,
                         y: data.risk_return_chart_data.er_hb,
                         mode: 'markers',
@@ -178,9 +178,8 @@
                             size: 12,
                             color: "red"
                         }
-                    };
+                    }];
 
-                    var plot1_data = [plot1_trace1, plot1_trace2];
 
                     var plot1_layout = {
                         plot_bgcolor: background_color,
@@ -206,7 +205,7 @@
                         responsive: true,
                     }
 
-                    Plotly.newPlot('plot1', plot1_data, plot1_layout, plot1_config);
+                    Plotly.newPlot('plot1', plot1_traces, plot1_layout, plot1_config);
 
 
                     // Fbprophet

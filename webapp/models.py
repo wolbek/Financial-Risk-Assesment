@@ -316,6 +316,6 @@ def seed_data_command():
             except:
                 self.scraped["bl sheet"] = []
 
-    var = Fetch(['WIPRO.NS','ZOMATO.NS','RELIANCE.NS'])
+    var = Fetch(['RELIANCE.NS','WIPRO.NS','ZOMATO.NS'])
     print(json.dumps(var.scraped))
     click.echo('Seeded data.')

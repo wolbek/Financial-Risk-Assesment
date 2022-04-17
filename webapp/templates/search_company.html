@@ -9,11 +9,13 @@
 {% block main %}
 <div class="col col-lg-9 col-sm-12 order-lg-first">
     <div class="row" id="main-div">
+        <!-- <img src="{{company.info.logo}}" width="50px" height="50px"> -->
         <h3 id="main-heading">{{company.info.profile.company_name}} ({{ticker}})</h3>
-        <!-- <p id="sub-heading">NSE - NSE Real Time Price. Currency in INR</p>
+        <p id="sub-heading">NSE - NSE Real Time Price. Currency in INR</p>
         <div>
-            <h1 id="current-price">3,664.95 </h1><span id="percent-change"> -26.15 (-0.71%)</span>
-        </div> -->
+            <!-- <h1 id="current-price">3,664.95 </h1><span id="percent-change"> -26.15 (-0.71%)</span> -->
+            <h1 id="current-price">{{'%0.2f' % company_data[-1]|float}}</h1>
+        </div>
     </div>
     <div class="row mt-3" id="main-tabs-div">
         <div class="col mt-2">
@@ -44,7 +46,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
             <div id="Statistics" class="tabcontent">
@@ -165,6 +166,7 @@
                 </table>
             </div>
             <div id="News" class="tabcontent">
+                {% if company.info.news %}
                 {% for item in company.info.news %}
                 <div class="row p-2">
                     <div class="col-lg-3" id="news-image-div">
@@ -191,6 +193,9 @@
 
                 </div>
                 {% endfor %}
+                {% else %}
+                <h2 style="text-align:center;">No news</h2>
+                {% endif %}
             </div>
             <div id="Profile" class="tabcontent">
                 <div class="container-fluid p-2">
@@ -328,5 +333,6 @@
     document.getElementById("defaultOpen").click();
     $(".border-start").removeClass('border-start')
     $("#tabs").find(".search-company").addClass("border-start")
+   
 </script>
 {% endblock %}

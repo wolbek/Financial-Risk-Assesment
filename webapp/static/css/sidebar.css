@@ -1,0 +1,79 @@
+:root {
+    --blue: #3D99FE;
+    --cyan: #6DF0F0;
+    --yellow: #D9F576;
+    --black: #100F15;
+}
+
+body {
+    background-image: url('bg.png');
+    background-size: cover;
+    background-color: var(--black);
+    height: 100vh;
+}
+
+#left, #right{
+    padding: 20px 30px 10px 0;        
+}
+#collapsed-sidebar{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);         
+    margin: 0;
+    height: 94vh;
+    position: fixed;
+    z-index: 1;
+}
+#search-bar{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    border-radius: 5px;
+    margin: 0;
+}
+#toggle-theme{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    height: 40px;
+    width: 40px;
+    margin: 0;
+}
+#theme-btn{
+    height: 40px;
+    width: 40px;
+    padding: 0px;
+}
+#main-div{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);          
+    margin: 0;
+    padding: 20px 15px;
+}
+
+@media (max-width: 700px) {
+  #toggle-theme, #tabs, #left{
+        display: none;
+    }
+    #collapsed-sidebar{
+        height: auto;
+    }            
+    #right{
+        padding: 20px;   
+    }
+    #mob-menu{
+        background: rgba(52, 52, 52, 0.36);
+        box-shadow: 2px 2px 20px 2px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(4px);
+        /* Note: backdrop-filter has minimal browser support */
+        border-radius: 10px;
+        margin: 0;
+        padding: 4px;
+    }
+    #mob-menu-div{
+        padding-right: 0;
+    }           
+}
+@media (min-width: 700px) {
+    #mob-menu-div{
+        display: none;
+    }
+}

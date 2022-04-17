@@ -11,52 +11,105 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Select2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600&family=Poppins&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}" />
+
     <style>
-        .error{
+        .error {
             color: red;
-            font-size: 10px;
+            font-size: 15px;
+        }
+
+        .flash-message-container {
+            bottom: 0;
+            right: 0;
+        }
+
+        /**Spinner**/
+        .spinner-text {
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+
+        .spinner {
+            width: 5rem;
+            height: 5rem;
+            margin: auto;
+            border-top: 3px solid rgba(0, 0, 0, 0.5);
+            border-right: 3px solid transparent;
+            border-radius: 50%;
+            -webkit-animation: rotation 1s linear infinite;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
+    {% block links %}{% endblock %}
 </head>
 
 <body>
-    <h1>NAVBAR</h1>
-    <a href="{{url_for('home')}}">Home</a>
-    {% if current_user.is_authenticated %}
-    <a href="{{url_for('logout')}}">Logout</a>
-    {% else %}
-    <a href="{{url_for('sign_up')}}">SignUp</a>
-    <a href="{{url_for('login')}}">Login</a>
-    {% endif %}
 
-
-
-    {% with messages=get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    {% for category,message in messages %}
-    <p>{{message}}</p>
-    {% endfor %}
+    <div class="flash-message-container position-fixed d-flex flex-column align-items-center align-items-md-end w-100"
+        style="z-index: 999;">
+        {% for category, message in messages %}
+        <div class="alert fade show alert-success alert-dismissible m-2" role="alert">
+            <div class="mr-3">{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
     {% endif %}
     {% endwith %}
-    
+
+
+
+
+    {% block content %}{% endblock %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js"
         integrity="sha512-V0j9LhrK9IMNdFYZqh+IqU4cjo7wdxyHNyH+L0td4HryBuZ7Oq6QxP2/CWr6TituX31+gv5PnolvERuTbz8UNA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-
-    {% block content %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
     <!-- Select 2 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!-- Sweet Alert -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        $(document).ready(() => {        
+        $(document).ready(() => {
+            setTimeout(() => {
+                $('.alert-dismissible').alert('close');
+            }, 3000);
+
             $('.select2-selector').select2({
                 width: '100%',
                 dropdownAutoWidth: true
             });
         });  
     </script>
+    {% block scripts %}{% endblock %}
 </body>
 
 </html>

@@ -1,0 +1,304 @@
+:root {
+    --blue: #3D99FE;
+    --cyan: #6DF0F0;
+    --yellow: #D9F576;
+    --black: #100F15;
+}
+
+body {
+    /* background-image: url('/static/images/bg.png'); */
+    background-image: linear-gradient(to right, rgb(0, 0, 0),rgb(49, 49, 49));
+    background-size: cover;
+    background-color: var(--black);
+    height: 100vh;
+}
+
+.select2-container--default .select2-selection--single{
+    padding:6px;
+    height: 45px;
+    font-size: 1em;  
+    position: relative;
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    border: none;
+}
+.select2-selection,.select2-selection--single{
+    background-color: #100F15;
+}
+
+.select2-dropdown{
+    background-color: #242424;
+    border: #242424;
+    color:#7d7d7d;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    color:#7d7d7d;
+    line-height: 33px;
+}
+
+.select2-selection__arrow {
+    margin-top: 9px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    color:#7d7d7d;
+}
+#search-button{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+
+    padding: 0px 5px;
+    border: none;
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+}
+
+#left,
+#right {
+    padding: 20px 30px 10px 0;
+}
+
+#collapsed-sidebar {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 0px 20px 20px 0px;
+    margin: 0;
+    height: 92vh;
+    position: fixed;
+    z-index: 1;
+}
+
+#toggle-theme {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 50px;
+    height: 40px;
+    width: 40px;
+    margin: 0;
+}
+
+#theme-btn {
+    height: 40px;
+    width: 40px;
+    padding: 0px;
+}
+
+#main-div {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 20px;
+    margin: 0;
+    padding: 20px 15px;
+}
+
+#main-heading,
+#sub-heading,
+#heading-budget,
+h5 {
+    font-family: 'Poppins', sans-serif;
+}
+
+#sub-heading {
+    color: #a5a5a5;
+}
+
+#main-tabs-div {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 2px 20px 2px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 20px;
+    margin: 0px;
+    border: none;
+    padding: 10px 10px 20px 10px;
+}
+
+#people-also-watch {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 10px;
+    margin: 0;
+    padding: 20px;
+    border-radius: 20px;
+    width: 90%;
+}
+
+#heading,
+h5,
+#news-heading {
+    font-family: 'Poppins', sans-serif;
+}
+
+#name,
+#value {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 2px 20px 2px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 10px;
+    margin: 0;
+    padding: 10px 20px;
+}
+
+#news-image-div,
+#news-div {
+    background: rgba(52, 52, 52, 0.25);
+    box-shadow: 2px 1px 10px 5px rgba(0, 0, 0, 0.20);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 15px;
+    margin: 0 10px;
+    padding: 10px;
+}
+
+#news-image-div {
+    overflow: hidden;
+}
+
+#news-div {
+    padding: 20px;
+    margin-left: 10px;
+}
+
+#value {
+    color: var(--cyan);
+}
+
+#price {
+    color: rgb(234, 234, 234);
+}
+
+#recent-activity {
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    margin: 0;
+    padding: 20px;
+    border-radius: 20px;
+    width: 90%;
+}
+
+#current-price,
+#percent-change {
+    display: inline-block;
+}
+
+#current-price {
+    margin: 0 10px 0 0;
+    color: var(--cyan);
+}
+
+#percent-change {
+    margin: 0 0px 0 10px;
+    color: #c4c4c4;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 14px;
+    transition: 0.3s;
+    font-size: 17px;
+    color: #7b7b7b;
+    font-weight: lighter;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    color: var(--blue);
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    color: var(--cyan);
+    text-decoration: underline;
+}
+
+.tabcontent {
+    background: rgba(52, 52, 52, 0.10);
+    box-shadow: 2px 2px 20px 2px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    /* Note: backdrop-filter has minimal browser support */
+    border-radius: 10px;
+    margin: 0px;
+    border: none;
+    padding: 20px;
+}
+
+#corporate-governance,
+#description-under-profile,
+#address-under-profile,
+#sector-under-profile,
+#ind-under-profile,
+#full-emp-under-profile,
+#key-exe-table-body,
+#news-sub-text {
+    color: #7b7b7b;
+}
+
+#news-image {
+    /*max-height: 120px;*/
+    border-radius: 10px;
+    max-width: inherit;
+    vertical-align: middle;
+    height: 100%;
+}
+
+@media (max-width: 700px) {
+
+    
+    #toggle-theme,
+    #tabs,
+    #left,
+    #rec-act-pp-al-wt {
+        display: none;
+    }
+
+    #collapsed-sidebar {
+        height: auto;
+    }
+
+    #right {
+        padding: 20px;
+    }
+
+    #mob-menu {
+        background: rgba(52, 52, 52, 0.36);
+        box-shadow: 2px 2px 20px 2px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(4px);
+        /* Note: backdrop-filter has minimal browser support */
+        border-radius: 10px;
+        margin: 0;
+        padding: 4px;
+    }
+
+    #mob-menu-div {
+        padding-right: 0;
+    }
+}
+
+@media (min-width: 700px) {
+    #mob-menu-div {
+        display: none;
+    }
+}

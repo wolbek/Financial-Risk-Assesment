@@ -1,60 +1,91 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 
 {% block title %}Assess Personalized Portfolio{% endblock %}
 
-{% block content %}
-<h1>Assess Personalized Portfolio</h1>
-<p>Enter your NSE stocks and their weights to assess the portfolio</p>
-<div>
-    Your budget
-    <br>
-    <input id="budget" type="number">
+{% block links %}
+<link href="{{ url_for('static', filename='css/assess_personalized_portfolio.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block main %}
+<div class="order-lg-first">
+    <div class="row" id="main-div">
+        <h2 id="main-heading">Build Your Portfolio</h2>
+        <p id="sub-heading">Enter your NSE stocks and their weights to assess the portfolio</p>
+        <div id="portfolio-wrapper">
+            <div class="row my-2 stock-wrapper">
+                <div class="col-lg-8 my-2">
+                    <select name="stock1" class="select2-selector">
+                        <option value='' selected>--Select a stock--</option>
+                        {% for company in companies %}
+                        <option value="{{company.name}}">{{company.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 my-2">
+                    <input type="number" min="0" max="100"
+                        class="form-control bg-transparent border-0 text-white weight" name="weight1"
+                        placeholder="Weight in %" required>
+                </div>
+                <div class="col my-2 action-buttons">
+                    <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
+                            width="90%" /></button>
+                    <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
+                            width="90%" /></button>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
+            <button type="button" class="btn assessButton" id="cta">Assess portfolio</button>
+            <!-- <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button> -->
+        </div>
+        <input type="hidden" name="name" value="Portfolio">
+
+        <div id="chart-spinner" class="pt-4" style="display: none;">
+            <div class="spinner"></div>
+            <div class="spinner-text">Loading</div>
+        </div>
+        <div id="output-wrapper" style="display:none;">
+            <p style="text-align:center;margin-top: 30px;">Return On Investment In Comparison To Risk Taken:</p>
+            <h1 id="sharpe-ratio" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
+            <div id="plot1" class="chart-info" style="width:94%;margin: 20px;"></div>
+
+            <!-- <div id="plot2" class="chart-info" style="width:50%;margin: 20px;"></div> -->
+        </div>
+    </div>
+
 </div>
-<h2>Portfolio</h2>
-<table id="portfolioTable">
-    <tr>
-        <th>NSE Stocks</th>
-        <th>Weights (in %)</th>
-    </tr>
-    <tr>
-        <td>
-            <select name="stock1" class="select2-selector">
-                <option value='' selected>--Select a stock--</option>
-                {% for company in companies %}
-                <option value="{{company.name}}">{{company.name}}</option>
-                {% endfor %}
-            </select>
-        </td>
-        <td><input type="number" min="0" max="100" name="weight1"></td>
 
-    </tr>
-</table>
-<i class="fa-solid fa-circle-plus"></i>
-<i class="fa-solid fa-circle-minus"></i>
-<div>
-    <button type="button" id="assessButton">Assess Portfolio</button>
-</div>
 
-<div id="plot" style="width:50%;"></div>
+{% endblock %}
 
+{% block scripts %}
 <script>
     let stockCount = 1;
+    let i = 0;
     // Add new experience input field when clicked on add circle (Delegated Event)
-    $(".fa-circle-plus").on("click", function () {
+    $("body").on("click", "#add", function () {
         ++stockCount;
+        $(".action-buttons").remove();
         let html =
-            `<tr>` +
-            `<td>` +
-            `<select name="stock${stockCount}" class="select2-selector">` +
-            `<option value='' selected>--Select a stock--</option>` +
-            `{% for company in companies %}` +
-            `<option value="{{company.name}}">{{company.name}}</option>` +
-            `{% endfor %}` +
-            `</select>` +
-            `</td>` +
-            `<td><input type="number" min="0" max="100" name="weight${stockCount}"></td>` +
-            `</tr>`
-        $("#portfolioTable").append(html);
+            `<div class="row my-2 stock-wrapper">` +
+            `    <div class="col-lg-8 my-2">` +
+            `        <select name="stock${stockCount}" class="select2-selector">` +
+            `            <option value='' selected>--Select a stock--</option>` +
+            `            {% for company in companies %}` +
+            `            <option value="{{company.name}}">{{company.name}}</option>` +
+            `            {% endfor %}` +
+            `        </select>` +
+            `    </div>` +
+            `    <div class="col-lg-2 my-2">` +
+            `        <input type="number" min="0" max="100" class="form-control bg-transparent border-0 text-white weight"` +
+            `            name="weight${stockCount}" placeholder="Weight in %" required>` +
+            `    </div>` +
+            `    <div class="col my-2 action-buttons">` +
+            `        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png" width="90%" /></button>` +
+            `        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png" width="90%" /></button>` +
+            `    </div>` +
+            `</div>`
+        $("#portfolio-wrapper").append(html);
         $('.select2-selector').select2({
             width: '100%',
             dropdownAutoWidth: true
@@ -62,90 +93,283 @@
     });
 
     //Delete respective education field or experience field when clicked on remove button (Delegated Event)
-    $(".fa-circle-minus").on("click", function () {
-        $("#portfolioTable").find("tr:last").remove();
+    $("body").on("click", "#minus", function () {
+        $("#portfolio-wrapper").find(".stock-wrapper").last().remove();
+        let html =
+            `    <div class="col my-2 action-buttons">` +
+            `        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png" width="90%" /></button>` +
+            `        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png" width="90%" /></button>` +
+            `    </div>`
+        $("#portfolio-wrapper").find(".stock-wrapper").last().append(html);
         --stockCount;
     })
 
     //Change the cursor to pointer when it is on add circle icon and delete field icon
-    $(".fa-circle-plus,.fa-circle-minus").on("mouseenter", function () {
+    $("body").on("mouseenter", "#add,#minus", function () {
         $(this).css("cursor", "pointer");
     })
 
-    $("#assessButton").on("click", function (event) {
-        validationOnClicked();
+    $("#cta").on("click", function (event) {
+        stocks = [];
+        weights = [];
+        for (let i = 0; i < stockCount; i++) {
+            stocks.push($(`[name='stock${i + 1}']`).val());
+            weights.push($(`[name='weight${i + 1}']`).val());
+        }
+        validationOnClicked(weights);
         if (!$(".error")[0]) {
-            budget = $("#budget").val();
-            stocks = [];
-            weights = [];
-            for (let i = 0; i < stockCount; i++) {
-                stocks.push($(`[name='stock${i + 1}']`).val());
-                weights.push($(`[name='weight${i + 1}']`).val());
+            $(`#chart-spinner`).css('display', 'block');
+            $('#output-wrapper').hide();
+            for (let j = 2; j <= i; j++) {
+                $(`#plot${j}`).remove();
             }
+            i = 2;
 
             $.ajax({
                 method: "POST",
                 url: "/api/f1/line-chart",
                 data: {
-                    budget: budget,
                     stocks: stocks,
                     weights: weights,
                 },
                 success: function (data) {
                     data = JSON.parse(data);
-                    let traces = []
+                    console.log(data)
+                    let background_color = "#000517"
+                    // let background_color = "rgba(0, 0, 21, 1)"
+                    let grid_color = "#383838"
+                    $(`#chart-spinner`).hide();
+                    $("#output-wrapper").css('display', 'block')
+                    //Sharpe Ratio
+                    $("#sharpe-ratio").css('display', 'block')
+                    if (data.sharpe_ratio < 1) {
+                        $("#sharpe-ratio").text("Bad");
+                    }
+                    else if (data.sharpe_ratio >= 1 && data.sharpe_ratio < 1.99) {
+                        $("#sharpe-ratio").text("Good");
+                    }
+                    else if (data.sharpe_ratio >= 2 && data.sharpe_ratio < 2.99) {
+                        $("#sharpe-ratio").text("Very Good");
+                    }
+                    else if (data.sharpe_ratio >= 3) {
+                        $("#sharpe-ratio").text("Excellent");
+                    }
 
-                    $.each(data.chart_data.stock_prices, function (stock, stock_prices) {
-                        traces.push({
-                            x: data.chart_data.dates,
-                            y: stock_prices,
-                            name: stock
-                        });
-                    })
-                    let background_color = "rgba(0, 0, 21, 1)"
-                    let layout = {
-                        title: "Line Chart",
+                    // Efficient Frontier
+                    var plot1_traces = [{
+                        x: data.risk_return_chart_data.expected_volatility,
+                        y: data.risk_return_chart_data.expected_return,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Other ratio',
+                        marker: {
+                            size: 5,
+                            color: "blue"
+                        }
+
+                    },
+                    {
+                        x: data.risk_return_chart_data.ev_hb,
+                        y: data.risk_return_chart_data.er_hb,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Ratio for portfolio with maximum efficiency ',
+                        marker: {
+                            size: 12,
+                            color: "red"
+                        }
+                    }];
+
+
+                    var plot1_layout = {
                         plot_bgcolor: background_color,
-                        paper_bgcolor: background_color
+                        paper_bgcolor: background_color,
+                        autosize: true,
+                        xaxis: {
+                            title: 'Expected Volatility',
+                            autorange: true,
+                            gridcolor: grid_color,
+                        },
+                        yaxis: {
+                            title: 'Expected Return',
+                            autorange: true,
+                            gridcolor: grid_color,
+                        },
+                        title: 'Portfolio Risk VS Returns',
+                        font: {
+                            size: 12,
+                            color: '#7f7f7f'
+                        }
                     };
+                    let plot1_config = {
+                        responsive: true,
+                    }
 
-                    let config = {
-                        responsive: true
+                    Plotly.newPlot('plot1', plot1_traces, plot1_layout, plot1_config);
+
+
+                    // Fbprophet
+                    // for (let i = 1; i <= data.newpreds; i++) {
+                    console.log(data.future_prediction_chart_data.f_preds_changes)
+                    $.each(data.future_prediction_chart_data.f_preds_data, function (key, value) {
+
+                        var plot_traces = [
+                            {
+                                x: value['ds'],
+                                y: value['yhat_upper'],
+                                name: "Upper uncertainty interval",
+                                line: {
+                                    color: "#969696",
+                                    width: 2
+                                },
+                                // mode: 'none'
+                            },
+                            {
+                                x: value['ds'],
+                                y: value['yhat_lower'],
+                                name: "Lower uncertainty interval",
+                                line: {
+                                    color: "#969696",
+                                    width: 2
+                                },
+                                // mode: 'none'
+                            },
+
+                            {
+                                x: value['ds'],
+                                y: value['actual'],
+                                mode: 'markers',
+                                type: 'scatter',
+                                name: 'Actual',
+                                marker: {
+                                    size: 4,
+                                    color: "#ADD8E6"
+                                }
+                            },
+                            {
+                                x: value['ds'],
+                                y: value['yhat'],
+                                name: "Forecast",
+                                line: {
+                                    color: "#387fba",
+                                    width: 3
+                                }
+                            },
+                        ]
+
+                        var plot_layout = {
+                            plot_bgcolor: background_color,
+                            paper_bgcolor: background_color,
+                            autosize: true,
+                            xaxis: {
+                                title: 'Dates',
+                                autorange: true,
+                                gridcolor: grid_color,
+                            },
+                            yaxis: {
+                                title: 'Price',
+                                autorange: true,
+                                gridcolor: grid_color,
+                            },
+                            title: `${key} Price Prediction `,
+                            font: {
+                                size: 12,
+                                color: '#7f7f7f'
+                            }
+                        };
+                        let plot_config = {
+                            responsive: true,
+                        }
+                        let html =
+                            `<div id="plot${i}" class="chart-info" style="width:95%;margin: 20px;"></div>`
+
+                        $("#output-wrapper").append(html)
+                        Plotly.newPlot(`plot${i}`, plot_traces, plot_layout, plot_config);
+
+                        i++;
+                    })
+                    //Showing percentage change (put inside above loop when needed to show)
+                    // html=
+                    // `<p>${key} percentage change (%): ${data.future_prediction_chart_data.f_preds_changes[i-2]}</p>`
+                    // $(`#plot${i}`).append(html)
+                    window.onresize = function () {
+                        Plotly.relayout('plot1', {
+                            'xaxis.autorange': true,
+                            'yaxis.autorange': true
+                        });
+                        for (let j = 2; j <= i; j++) {
+                            Plotly.relayout(`plot${j}`, {
+                                'xaxis.autorange': true,
+                                'yaxis.autorange': true
+                            });
+                        }
+
                     };
-
-                    Plotly.newPlot("plot", traces, layout, config)
                 }
             })
         }
     });
 
-    function validationOnClicked() {
-        if ($("#budget").val() == '') {
-            $("#budget").closest("div").find("p").remove();
-            $("#budget").closest("div").append($("<p>").text("This field is required").addClass('error'))
-        }
-        else {
-            $("#budget").closest("div").find("p").remove();
-        }
-
+    function validationOnClicked(weights) {
+        //Fields empty error
         for (let i = 0; i < stockCount; i++) {
             if ($(`[name='stock${i + 1}']`).val() == '') {
-                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
-                $(`[name='stock${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+                $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
+                $(`[name='stock${i + 1}']`).closest("div").append($("<p>").text("This field is required").addClass('error'))
             }
             else {
-                $(`[name='stock${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='stock${i + 1}']`).closest("div").find("p").remove();
             }
             if ($(`[name='weight${i + 1}']`).val() == '') {
-                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
-                $(`[name='weight${i + 1}']`).closest("td").append($("<p>").text("This field is required").addClass('error'))
+                $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
+                $(`[name='weight${i + 1}']`).closest("div").append($("<p>").text("This field is required").addClass('error'))
             }
             else {
-                $(`[name='weight${i + 1}']`).closest("td").find("p").remove();
+                $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
             }
+        }
+        //Stock selected more than one time error
+        let stock_repeated = false;
+        let stock_list = []
+        for (let i = 0; i <= stockCount; i++) {
+            if (stock_list.includes($(`[name='stock${i}']`).val())) {
+                stock_repeated = true;
+                break;
+            }
+            else {
+                stock_list.push($(`[name='stock${i}']`).val())
+            }
+        }
+        if (stock_repeated == true) {
+            $("#portfolio-wrapper").find(".repeatedError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Some stocks are repeated").addClass('error repeatedError'))
+        }
+        else {
+            $("#portfolio-wrapper").find(".repeatedError").remove();
+        }
+        //Less than two stock error
+        if (stockCount <= 1) {
+            $("#portfolio-wrapper").find(".stockCountError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Enter more than one stock in portfolio").addClass('error stockCountError'))
 
+        } else {
+            $("#portfolio-wrapper").find(".stockCountError").remove();
+        }
+        //Weight sum is not 100 error
+        let sum = 0
+        for (let i = 0; i < weights.length; i++) {
+            sum += parseInt(weights[i]);
+        }
+        if (sum != 100) {
+            $("#portfolio-wrapper").find(".weightError").remove();
+            $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100").addClass('error weightError'))
+        } else {
+            $("#portfolio-wrapper").find(".weightError").remove();
         }
     }
+
+    $(".border-start").removeClass('border-start')
+    $("#tabs").find(".assess-personalized-portfolio").addClass("border-start")
 
 </script>
 {% endblock %}

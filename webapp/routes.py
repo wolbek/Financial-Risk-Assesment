@@ -2,7 +2,7 @@ import json
 from webapp import app,db,bcrypt
 from flask import redirect, render_template, request, url_for,flash,session
 from webapp.models import Company, SavedPortfolios, User
-from webapp.forms import SignUpForm,LoginForm, SavePortfolioForm
+from webapp.forms import SignUpForm,LoginForm
 from flask_login import current_user, login_required, login_user, logout_user
 from webapp.global_constants import companies
 import yfinance as yf
@@ -59,19 +59,18 @@ def logout():
 def home():
     return render_template('home.html')
 
-@app.route("/assess-personalized-portfolio")
+@app.route("/assess-personalized-portfolio",methods=['GET','POST'])
 @login_required
 def assess_personalized_portfolio():
-    form=SavePortfolioForm()
-    if form.validate_on_submit():  
+    if request.method=="POST":  
         stocks=[]
         for i in range(1,int(request.form['stockCount'])+1):                        
             if request.form['stock'+str(i)]=="" or request.form['weight'+str(i)]=="":
                 flash('Some fields are not selected!', 'error')
-                return render_template('create_faculty.html',form=form)
+                return render_template('create_faculty.html')
             elif request.form['stock'+str(i)] in stocks:
                 flash('Some stocks are repeated!', 'error')
-                return render_template('create_faculty.html',form=form)
+                return render_template('create_faculty.html')
             else:
                 stocks.append(request.form['stock'+str(i)])
         portfolio_stocks={}
@@ -80,8 +79,10 @@ def assess_personalized_portfolio():
         save_portfolio=SavedPortfolios(user_id=session['id'],portfolio_name=request.form['name'],portfolio_stocks=portfolio_stocks)
         db.session.add(save_portfolio)
         db.session.commit()
+        flash('Portfolio is saved successfully', 'success')
+        return redirect(url_for('saved_portfolios'))
 
-    return render_template('assess_personalized_portfolio.html',form=form)
+    return render_template('assess_personalized_portfolio.html')
 
 @app.route("/api/f1/line-chart",methods=['GET','POST'])
 @login_required

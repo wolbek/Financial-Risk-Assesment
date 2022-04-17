@@ -36,11 +36,11 @@
                 </div>
             </div>
             <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
-                <button type="submit" class="btn assessButton" id="cta">Assess portfolio</button>
-                <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button>
+                <button type="button" class="btn assessButton" id="cta">Assess portfolio</button>
+                <button class="btn btn-outline-primary" type="submit" id="cta-secondary">Save portfolio</button>
             </div>
             <input type="hidden" id="stockCount" name="stockCount" value="">
-
+            <input type="hidden" name="name" value="Portfolio">
         </form>
 
         <div id="chart-spinner" class="pt-4" style="display: none;">
@@ -307,10 +307,10 @@
         }
     });
 
-    $("#portfolio-form").on("submit",function(){
+    $("#portfolio-form").on("submit",function(event){
         event.preventDefault();
         $("#stockCount").val(stockCount);
-        $('#form').submit();
+        $('#portfolio-form').submit();
     })
 
 
@@ -346,68 +346,7 @@
 
         }
     }
-
-    // $('#cta-secondary').on('click', function () {
-    // Swal.fire({
-    //     icon: 'error',
-    //     title: 'File Too Big!',
-    //     text: 'Select a file less than 256KB',
-    // })
-    //     stocks = [];
-    //     weights = [];
-    //     for (let i = 0; i < stockCount; i++) {
-    //         stocks.push($(`[name='stock${i + 1}']`).val());
-    //         weights.push($(`[name='weight${i + 1}']`).val());
-    //     }
-
-    //     const savePortfolio = $('<form />', {
-    //         method: 'POST',
-    //         action: `/saved-portfolios`,
-    //         enctype: "multipart/form-data"
-    //     });
-    //     let html=
-    //     '{{ form.hidden_tag() }}'+
-    //     ``
-
-    //     savePortfolio.append(html);
-
-    //     const fields = [
-    //         {
-    //             label: $('Name'),
-    //             field: $('{{form.name(class="form-control")}}'),
-    //         },
-
-    //     ];
-
-    //     for (const field of fields) {
-    //         const container = $('<div />', {
-    //             class: 'd-flex flex-column my-4'
-    //         });
-    //         container.append(field.label);
-    //         const inputField = field.field;
-    //         if (field.value)
-    //             inputField.val(field.value);
-    //         container.append(inputField);
-    //         savePortfolio.append(container);
-    //     }
-
-    //     savePortfolio.append($('<button />', {
-    //         type: 'submit',
-    //         class: 'd-none'
-    //     }));
-    //     Swal.fire({
-    //         title: 'Save Portfolio',
-    //         html: savePortfolio[0],
-    //         showCancelButton: true,
-    //         confirmButtonText: 'Save',
-    //         preConfirm: function () {
-    //             savePortfolio.find('button[type="submit"]').click();
-    //             return false;
-    //         },
-    //     });
-    //     $(".swal2-modal").css('background-color', 'rgb(49, 49, 49)');//Optional changes the color of the sweetalert 
-    //     // $(".swal2-container.in").css('background-color', 'rgba(43, 165, 137, 0.45)');//changes the color of the overlay
-    // });
+    
     $(".border-start").removeClass('border-start')
     $("#tabs").find(".assess-personalized-portfolio").addClass("border-start")
 

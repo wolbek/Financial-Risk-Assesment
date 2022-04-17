@@ -19,6 +19,3 @@ class SignUpForm(FlaskForm):
 class LoginForm(FlaskForm):
     email=StringField(label='Email',validators=[InputRequired(),Email()],render_kw={"placeholder": "Email"})
     password=PasswordField(label='Password',validators=[InputRequired()],render_kw={"placeholder": "Password"})
-
-class SavePortfolioForm(FlaskForm):
-    name=StringField(label='Portfolio Name',validators=[InputRequired(),Length(min=1,max=100)])

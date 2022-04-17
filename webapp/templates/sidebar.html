@@ -3,121 +3,180 @@
 {% block title %}Sidebar{% endblock %}
 {% block links %}
 <link href="{{ url_for('static', filename='css/sidebar.css') }}" rel="stylesheet" />
+
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row text-white">
-            <div class="col-lg-1" id="left">
-                <div class="col" id="collapsed-sidebar" >
-                    <div class="row mx-0">
-                        <button class="btn text-white" type="button" style="padding: 20px 20px;" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
-                            <img src="/static/images/menu.png" width="35px" />
-                        </button>
-                    </div>
-                    <div id="tabs">
-                        
-                        <div class="row mx-0 my-4 text-center">
-                            <a href="{{url_for('home')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Home">
-                                <img src="/static/images/home-icon.png" width="22px" />
-                            </a>
-                        </div>
-                        <div class="row mx-0 my-4 text-center">
-                            <a href="home.html" class="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Saved portfolios">
-                                <img src="/static/images/Bookmark_fill.png" width="22px" />
-                            </a>
-                        </div>
-                        <div class="row mx-0 my-4 text-center border-start">
-                            <a href="home.html" class="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Portfolio">
-                                <img src="/static/images/portfolio-icon.png" width="30px" />
-                            </a>
-                        </div>                       
-                        <div class="row mx-0 my-4 text-center">
-                            <a href="{{url_for('search_company')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Search">
-                                <img src="/static/images/search-icon.png" width="22px" />
-                            </a>
-                        </div>                       
-                        <div class="row mx-0 my-4 text-center">
-                            <a href="{{url_for('logout')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right" title="Logout">
-                                <img src="/static/images/sign_out_squre_fill.png" width="22px" />
-                            </a>
-                        </div>
-                    </div>
+<div class="container-fluid">
+    <div class="row text-white">
+        <div class="col-lg-1" id="left">
+            <div class="col" id="collapsed-sidebar">
+                <div class="row mx-0">
+                    <button class="btn text-white" type="button" style="padding: 20px 20px;" data-bs-toggle="offcanvas"
+                        href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                        <img src="/static/images/menu.png" width="35px" />
+                    </button>
                 </div>
-            </div>
-            <div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-                <div class="offcanvas-header">
-                  <h5 class="offcanvas-title text-white" id="offcanvasExampleLabel">StockRisk</h5>
-                  <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <div>
-                        <div class="row mx-0 my-4">
-                            <div class="col-1">
-                                <img class="mt-0" src="/static/images/home-icon.png" width="22px" />
-                            </div>
-                            <div class="col">
-                                <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('home')}}" style="color: #a5a5a5; text-decoration: none;">Home</a></h4>
-                            </div>
-                        </div>
-                        <div class="row mx-0 my-4">
-                            <div class="col-1">
-                                <img class="mt-0" src="/static/images/Bookmark_fill.png" width="22px" />
-                            </div>
-                            <div class="col">
-                                <h4 class="mx-2 mt-3 d-inline text-white"><a href="" style="color: #a5a5a5; text-decoration: none;">Saved</a></h4>
-                            </div>
-                        </div>
-                        <div class="row mx-0 my-4">
-                            <div class="col-1">
-                                <img class="mt-0" src="/static/images/portfolio-icon.png" width="22px" />
-                            </div>
-                            <div class="col">
-                                <h4 class="mx-2 mt-3 d-inline text-white"><a href="" style="color: #6DF0F0;">Portfolio</a></h4>
-                            </div>
-                        </div>                     
-                        <div class="row mx-0 my-4">
-                            <div class="col-1">
-                                <img class="mt-0" src="/static/images/search-icon.png" width="22px" />
-                            </div>
-                            <div class="col">
-                                <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('search_company')}}" style="color: #a5a5a5; text-decoration: none;">Search</a></h4>
-                            </div>
-                        </div>                       
-                        <div class="row mx-0 my-4">
-                            <div class="col-1">
-                                <img class="mt-0" src="/static/images/sign_out_squre_fill.png" width="22px" />
-                            </div>
-                            <div class="col">
-                                <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('logout')}}" style="color: #a5a5a5; text-decoration: none;">Sign Out</a></h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div id="tabs">
 
-            <div class="col-lg-11" id="right">
-                <div class="row d-flex justify-content-between">
-                    <div class="col-2" id="mob-menu-div">
-                        <div class="col" id="mob-menu">
-                            <a class="btn px-1" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
-                                <img src="/static/images/menu.png" width="25px"/>
-                            </a>
-                        </div>
+                    <div class="row mx-0 my-4 text-center">
+                        <a href="{{url_for('home')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Home">
+                            <img src="/static/images/home-icon.png" width="22px" />
+                        </a>
                     </div>
-                    <div class="col">
-                        <div class="col" id="search-bar">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-transparent border-0 pe-0" id="search-icon"><img src="/static/images/search-bar-icon.png" height="60%" /></span>
-                                <input type="text" class="form-control bg-transparent border-0 text-white" placeholder="Search" aria-describedby="search-icon">
-                            </div>
-                        </div>
+                    <div class="row mx-0 my-4 text-center saved-portfolios">
+                        <a href="{{url_for('saved_portfolios')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Saved portfolios">
+                            <img src="/static/images/Bookmark_fill.png" width="22px" />
+                        </a>
                     </div>
-                </div>
-                <div class="row">
-                    {% block main %}{% endblock %}
+                    <div class="row mx-0 my-4 text-center assess-personalized-portfolio border-start">
+                        <a href="{{url_for('assess_personalized_portfolio')}}" class="btn" data-bs-toggle="tooltip"
+                            data-bs-placement="right" title="Portfolio">
+                            <img src="/static/images/portfolio-icon.png" width="30px" />
+                        </a>
+                    </div>
+                    <div class="row mx-0 my-4 text-center search-company">
+                        <a href="{{url_for('search_company')}}" class="btn" data-bs-toggle="tooltip"
+                            data-bs-placement="right" title="Search">
+                            <img src="/static/images/search-icon.png" width="22px" />
+                        </a>
+                    </div>
+                    <div class="row mx-0 my-4 text-center">
+                        <a href="{{url_for('logout')}}" class="btn" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Logout">
+                            <img src="/static/images/sign_out_squre_fill.png" width="22px" />
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-white" id="offcanvasExampleLabel">StockRisk</h5>
+                <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div>
+                    <div class="row mx-0 my-4">
+                        <div class="col-1">
+                            <img class="mt-0" src="/static/images/home-icon.png" width="22px" />
+                        </div>
+                        <div class="col">
+                            <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('home')}}"
+                                    style="color: #a5a5a5; text-decoration: none;">Home</a></h4>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-4">
+                        <div class="col-1">
+                            <img class="mt-0" src="/static/images/Bookmark_fill.png" width="22px" />
+                        </div>
+                        <div class="col">
+                            <h4 class="mx-2 mt-3 d-inline text-white saved-portfolios"><a href="{{url_for('saved_portfolios')}}"
+                                    style="color: #a5a5a5; text-decoration: none;">Saved</a></h4>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-4">
+                        <div class="col-1">
+                            <img class="mt-0" src="/static/images/portfolio-icon.png" width="22px" />
+                        </div>
+                        <div class="col">
+                            <h4 class="mx-2 mt-3 d-inline text-white assess-personalized-portfolio"><a
+                                    href="{{url_for('assess_personalized_portfolio')}}"
+                                    style="color: #6DF0F0;">Portfolio</a></h4>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-4">
+                        <div class="col-1">
+                            <img class="mt-0" src="/static/images/search-icon.png" width="22px" />
+                        </div>
+                        <div class="col">
+                            <h4 class="mx-2 mt-3 d-inline text-white search-company"><a
+                                    href="{{url_for('search_company')}}"
+                                    style="color: #a5a5a5; text-decoration: none;">Search</a></h4>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-4">
+                        <div class="col-1">
+                            <img class="mt-0" src="/static/images/sign_out_squre_fill.png" width="22px" />
+                        </div>
+                        <div class="col">
+                            <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('logout')}}"
+                                    style="color: #a5a5a5; text-decoration: none;">Sign Out</a></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-11" id="right">
+            <div class="row d-flex justify-content-between">
+                <div class="col-2" id="mob-menu-div">
+                    <div class="col" id="mob-menu">
+                        <a class="btn px-1" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+                            aria-controls="offcanvasExample">
+                            <img src="/static/images/menu.png" width="25px" />
+                        </a>
+                    </div>
+                </div>
+                <!-- <div class="col">
+                    <div class="col" id="search-bar">
+                        <div class="row input-group mb-3">
+                            <div>
+                                <span class="input-group-text bg-transparent border-0 pe-0" id="search-icon"><img src="/static/images/search-bar-icon.png" height="60%" /></span>
+
+                                <select name="stock" class="select2-selector">
+                                    <option value='' selected>Search</option>
+                                    {% for company in companies %}
+                                    <option value="{{company.name}}">{{company.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                             <input type="text" class="form-control bg-transparent border-0 text-white" placeholder="Search" aria-describedby="search-icon">
+                            
+
+
+
+                            <span class="input-group-text bg-transparent border-0 pe-0" id="search-icon"><img src="/static/images/search-bar-icon.png" height="60%" /></span>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="col">
+                    <form method="POST" action="{{url_for('search_company')}}">
+                    <div class="col" id="search-bar">
+                        <div class="row mb-3 ">
+
+                            <div class="col-11">
+                                <select name="company" class="select2-selector" id="search-bar-select-field">
+                                    <option value='' selected>Search</option>
+                                    {% for company in companies %}
+                                    <option value="{{company.name}}">{{company.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-1">
+                                <button type="submit" id="search-button"><span
+                                        class="input-group-text bg-transparent border-0" id="search-icon"><img
+                                            src="/static/images/search-bar-icon.png" height="60%" /></span></button>
+                            </div>
+
+
+
+
+                            <!-- <input type="text" class="form-control bg-transparent border-0 text-white" placeholder="Search" aria-describedby="search-icon"> -->
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                {% block main %}{% endblock %}
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

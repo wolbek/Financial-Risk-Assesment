@@ -11,40 +11,44 @@
     <div class="row" id="main-div">
         <h2 id="main-heading">Build Your Portfolio</h2>
         <p id="sub-heading">Enter your NSE stocks and their weights to assess the portfolio</p>
-        <div id="portfolio-wrapper">
-            <div class="row my-2 stock-wrapper">
-                <div class="col-lg-8 my-2">
-                    <select name="stock1" class="select2-selector">
-                        <option value='' selected>--Select a stock--</option>
-                        {% for company in companies %}
-                        <option value="{{company.name}}">{{company.name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-lg-2 my-2">
-                    <input type="number" min="0" max="100"
-                        class="form-control bg-transparent border-0 text-white weight" name="weight1"
-                        placeholder="Weight in %" required>
-                </div>
-                <div class="col my-2 action-buttons">
-                    <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
-                            width="90%" /></button>
-                    <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
-                            width="90%" /></button>
+        <form method="POST" id="portfolio-form">
+            <div id="portfolio-wrapper">
+                <div class="row my-2 stock-wrapper">
+                    <div class="col-lg-8 my-2">
+                        <select name="stock1" class="select2-selector">
+                            <option value='' selected>--Select a stock--</option>
+                            {% for company in companies %}
+                            <option value="{{company.name}}">{{company.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-2 my-2">
+                        <input type="number" min="0" max="100"
+                            class="form-control bg-transparent border-0 text-white weight" name="weight1"
+                            placeholder="Weight in %" required>
+                    </div>
+                    <div class="col my-2 action-buttons">
+                        <button class="btn bg-transparent" id="add"><img src="/static/images/add-icon.png"
+                                width="90%" /></button>
+                        <button class="btn bg-transparent" id="minus"><img src="/static/images/delete-icon.png"
+                                width="90%" /></button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
-            <button type="submit" class="btn assessButton" id="cta">Assess portfolio</button>
-            <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button>
-        </div>
+            <div class="d-grid gap-2 d-flex col-12 mt-4 mx-auto justify-content-center">
+                <button type="submit" class="btn assessButton" id="cta">Assess portfolio</button>
+                <button class="btn btn-outline-primary" type="button" id="cta-secondary">Save portfolio</button>
+            </div>
+            <input type="hidden" id="stockCount" name="stockCount" value="">
+
+        </form>
 
         <div id="chart-spinner" class="pt-4" style="display: none;">
             <div class="spinner"></div>
             <div class="spinner-text">Loading</div>
         </div>
         <div id="output-wrapper" style="display:none;">
-            <p style="text-align:center;margin-top: 30px;">Till Date Return On Investment:</p>
+            <p style="text-align:center;margin-top: 30px;">Return On Investment In Comparison To Risk Taken:</p>
             <h1 id="sharpe-ratio" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
             <div id="plot1" class="chart-info" style="width:94%;margin: 20px;"></div>
 
@@ -209,6 +213,26 @@
                     $.each(data.newpreds, function (key, value) {
                         i++;
                         var plot_traces = [
+                            {
+                                x: data.newpreds[key].ds,
+                                y: data.newpreds[key].yhat_upper,
+                                name: "Upper uncertainty interval",
+                                line: {
+                                    color: "#969696",
+                                    width: 2
+                                },
+                                // mode: 'none'
+                            },
+                            {
+                                x: data.newpreds[key].ds,
+                                y: data.newpreds[key].yhat_lower,
+                                name: "Lower uncertainty interval",
+                                line: {
+                                    color: "#969696",
+                                    width: 2
+                                },
+                                // mode: 'none'
+                            },
 
                             {
                                 x: data.newpreds[key].ds,
@@ -283,7 +307,11 @@
         }
     });
 
-
+    $("#portfolio-form").on("submit",function(){
+        event.preventDefault();
+        $("#stockCount").val(stockCount);
+        $('#form').submit();
+    })
 
 
 
@@ -303,71 +331,85 @@
             else {
                 $(`[name='weight${i + 1}']`).closest("div").find("p").remove();
             }
-            let sum=0
+            let sum = 0
             for (let i = 0; i < weights.length; i++) {
                 sum += parseInt(weights[i]);
             }
             //Need at least two stocks error?
             //zomato with others doesn't work because it's past data doesn't start with 2014
-            if(sum!=100){
+            if (sum != 100) {
                 $("#portfolio-wrapper").find(".weighterror").remove();
                 $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100.").addClass('error weighterror'))
-            }else{
+            } else {
                 $("#portfolio-wrapper").find(".weighterror").remove();
             }
 
         }
     }
 
-    $('#cta-secondary').on('click', function () {
-        // Swal.fire({
-        //     icon: 'error',
-        //     title: 'File Too Big!',
-        //     text: 'Select a file less than 256KB',
-        // })
+    // $('#cta-secondary').on('click', function () {
+    // Swal.fire({
+    //     icon: 'error',
+    //     title: 'File Too Big!',
+    //     text: 'Select a file less than 256KB',
+    // })
+    //     stocks = [];
+    //     weights = [];
+    //     for (let i = 0; i < stockCount; i++) {
+    //         stocks.push($(`[name='stock${i + 1}']`).val());
+    //         weights.push($(`[name='weight${i + 1}']`).val());
+    //     }
 
-        const savePortfolio = $('<form />', {
-            method: 'POST',
-            action: `/save-portfolio/{{current_user.id}}`,
-            enctype: "multipart/form-data"
-        });
+    //     const savePortfolio = $('<form />', {
+    //         method: 'POST',
+    //         action: `/saved-portfolios`,
+    //         enctype: "multipart/form-data"
+    //     });
+    //     let html=
+    //     '{{ form.hidden_tag() }}'+
+    //     ``
 
-        savePortfolio.append('{{ form.hidden_tag() }}');
+    //     savePortfolio.append(html);
 
-        const fields = [
-            {
-                label: $('Name'),
-                field: $('<input type="text" name="portfolio_name">'),
-            }
-        ];
+    //     const fields = [
+    //         {
+    //             label: $('Name'),
+    //             field: $('{{form.name(class="form-control")}}'),
+    //         },
 
-        for (const field of fields) {
-            const container = $('<div />', {
-                class: 'd-flex flex-column my-4'
-            });
-            container.append(field.label);
-            const inputField = field.field;
-            if (field.value)
-                inputField.val(field.value);
-            container.append(inputField);
-            savePortfolio.append(container);
-        }
+    //     ];
 
-        savePortfolio.append($('<button />', {
-            type: 'submit',
-            class: 'd-none'
-        }));
-        Swal.fire({
-            title: 'Save Portfolio',
-            html: savePortfolio[0],
-            showCancelButton: true,
-            confirmButtonText: 'Save',
-            preConfirm: function () {
-                savePortfolio.find('button[type="submit"]').click();
-                return false;
-            },
-        });
-    });
+    //     for (const field of fields) {
+    //         const container = $('<div />', {
+    //             class: 'd-flex flex-column my-4'
+    //         });
+    //         container.append(field.label);
+    //         const inputField = field.field;
+    //         if (field.value)
+    //             inputField.val(field.value);
+    //         container.append(inputField);
+    //         savePortfolio.append(container);
+    //     }
+
+    //     savePortfolio.append($('<button />', {
+    //         type: 'submit',
+    //         class: 'd-none'
+    //     }));
+    //     Swal.fire({
+    //         title: 'Save Portfolio',
+    //         html: savePortfolio[0],
+    //         showCancelButton: true,
+    //         confirmButtonText: 'Save',
+    //         preConfirm: function () {
+    //             savePortfolio.find('button[type="submit"]').click();
+    //             return false;
+    //         },
+    //     });
+    //     $(".swal2-modal").css('background-color', 'rgb(49, 49, 49)');//Optional changes the color of the sweetalert 
+    //     // $(".swal2-container.in").css('background-color', 'rgba(43, 165, 137, 0.45)');//changes the color of the overlay
+    // });
+    $(".border-start").removeClass('border-start')
+    $("#tabs").find(".assess-personalized-portfolio").addClass("border-start")
 
 </script>
 {% endblock %}

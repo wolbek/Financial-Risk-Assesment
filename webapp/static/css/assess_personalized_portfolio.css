@@ -6,9 +6,11 @@
 }
 
 body {
-    background-image: url('/static/images/bg.png');
+    /* background-image: url('/static/images/bg.png'); */
+    background-image: linear-gradient(to right, rgb(0, 0, 0),rgb(49, 49, 49));
     background-size: cover;
     background-color: var(--black);
+    height: 100vh;
 }
 #left, #right{
     padding: 20px 30px 10px 0;
@@ -16,7 +18,7 @@ body {
 
 .select2-container--default .select2-selection--single{
     padding:6px;
-    height: 37px;
+    height: 45px;
     font-size: 1em;  
     position: relative;
     background: rgba(52, 52, 52, 0.36);
@@ -28,18 +30,29 @@ body {
     background-color: #100F15;
 }
 
+.select2-dropdown{
+    background-color: #242424;
+    border: #242424;
+    color:#7d7d7d;
+}
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    background-image: -khtml-gradient(linear, left top, left bottom, from(rgba(52, 52, 52, 0.36)), to(rgba(52, 52, 52, 0.36)));
-    background-image: -moz-linear-gradient(top, rgba(52, 52, 52, 0.36), rgba(52, 52, 52, 0.36));
-    background-image: -ms-linear-gradient(top, rgba(52, 52, 52, 0.36), rgba(52, 52, 52, 0.36));
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(52, 52, 52, 0.36)), color-stop(100%, rgba(52, 52, 52, 0.36)));
-    background-image: -webkit-linear-gradient(top, rgba(52, 52, 52, 0.36), rgba(52, 52, 52, 0.36));
-    background-image: -o-linear-gradient(top, rgba(52, 52, 52, 0.36), rgba(52, 52, 52, 0.36));
-    background-image: linear-gradient(rgba(52, 52, 52, 0.36), rgba(52, 52, 52, 0.36));
-    color: rgb(0, 0, 0);
-    font-size: 1.3em;
-    margin-top: 5px;
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    color:#7d7d7d;
+    line-height: 33px;
+}
+
+.select2-selection__arrow {
+    margin-top: 9px;
+}
+
+#search-button{
+    background: rgba(52, 52, 52, 0.36);
+    box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
+
+    padding: 0px 5px;
+    border: none;
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
 }
 
 
@@ -54,14 +67,13 @@ body {
     position: fixed;
     z-index: 1;
 }
-#search-bar{
+/* #search-bar{
     background: rgba(52, 52, 52, 0.36);
     box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(4px);
-    /* Note: backdrop-filter has minimal browser support */
     border-radius: 15px;
     margin: 0;
-}
+} */
 #toggle-theme{
     background: rgba(52, 52, 52, 0.36);
     box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
@@ -92,15 +104,17 @@ body {
 #sub-heading{
     color: #a5a5a5;
 }
-#stock-name, .weight, #add, #minus, #budget, #suggestions, #news-div{
+.weight, #add, #minus{
     background: rgba(52, 52, 52, 0.36);
     box-shadow: 2px 4px 20px 5px rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(4px);
     /* Note: backdrop-filter has minimal browser support */
     border-radius: 10px;
     margin: 0;
+    height:45px;
 }
 #add, #minus{
+    width: 40px;
     border-radius: 100%;
     border: none;
     padding: 6px;
@@ -125,6 +139,9 @@ body {
 #price{
     color: rgb(234, 234, 234);
 }
+
+
+
 #cta {
     padding: 8px 30px;
     border: none;
@@ -134,6 +151,7 @@ body {
     border-radius: 10px;
     font-family: 'Poppins', sans-serif;
 }
+
 #cta-secondary {
     padding: 8px 30px;
     border: 1px solid var(--cyan);

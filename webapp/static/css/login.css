@@ -6,10 +6,13 @@
 }
 
 body {
-    background-image: url('/static/images/bg.png');
+    /* background-image: url('/static/images/bg.png'); */
+    background-image: linear-gradient(to right, rgb(0, 0, 0),rgb(49, 49, 49));
+
     background-size: cover;
     background-repeat: no-repeat;
     background-color: var(--black);
+    height: 100vh;
 }
 
 #sign-in-form{

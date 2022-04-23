@@ -264,7 +264,7 @@ h5,
     height: 100%;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 992px) {
 
     
     #toggle-theme,
@@ -297,7 +297,7 @@ h5,
     }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 992px) {
     #mob-menu-div {
         display: none;
     }

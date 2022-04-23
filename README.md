@@ -1,22 +1,24 @@
 ## TO USE THE PROJECT:
 
+### Download and install Anaconda. Checkmark both “Add to path” and “default”.
+
 ### Clone the project using:
 ```git clone https://github.com/wolbek/Financial-Risk-Assessment.git```
 
-### Change your path to the project in cli
+### Change your path to the project in cli:
 ```cd .\Financial-Risk-Assessment\```
 
-### Install virtual env using (if not installed in system) :
-```pip install virtualenv```
+### Inititalize conda in VS code:
+```conda init```
 
-### Make virtual environment using:
-```virtualenv venv```
+### Create a conda virtual environment (named as 'venv' with python 3.8):
+```conda create -n venv python=3.8```
 
-### To enable running scripts on system
-``Set-ExecutionPolicy Unrestricted``
+### Activate conda environment:
+```conda activate venv```
 
-### Activate virtual environment using:
-```.\venv\Scripts\activate```
+### Install mingw in environment:
+```conda install libpython m2w64-toolchain -c msys2```
 
 ### Install requirements.txt using:
 ```pip install -r requirements.txt```

@@ -177,8 +177,11 @@
                         {% else %}
                         <img id="news-image" src="{{item[1]}}" alt="news image" />
                         {% endif %} -->
-                        <img id="news-image"
+                        <!-- <img id="news-image"
                             src="https://realsound.jp/wp-content/uploads/2020/08/rs-font-thumbnail_news_300.jpg"
+                            alt="news image" /> -->
+                        <img id="news-image"
+                            src="https://thumbs.dreamstime.com/b/news-sign-newspaper-icon-isolated-dark-background-simple-vector-logo-news-sign-newspaper-icon-isolated-dark-background-195402693.jpg"
                             alt="news image" />
                     </div>
 
@@ -313,7 +316,7 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block script %}
 <script>
     function opentabbbb(evt, tabsName) {
         var i, tabcontent, tablinks;
@@ -331,8 +334,13 @@
 
     // Get the element with id="defaultOpen" and click on it
     document.getElementById("defaultOpen").click();
-    $(".border-start").removeClass('border-start')
-    $("#tabs").find(".search-company").addClass("border-start")
+    // $(".border-start").removeClass('border-start');
+    // $("#tabs").find(".search-company").addClass("border-start");
+    $(".active-menu-1").removeClass('active-menu-1');
+    $("#tabs").find(".search-company-menu-1").addClass("active-menu-1");
+    $(".active-menu-2").removeClass("active-menu-2");
+    $(".offcanvas-body").find(".search-company-menu-2").addClass("active-menu-2");
+
    
 </script>
 {% endblock %}

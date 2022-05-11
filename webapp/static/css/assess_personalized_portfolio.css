@@ -16,6 +16,19 @@ body {
     padding: 20px 30px 10px 0;
 }
 
+.active-menu-1{
+    background-color: #343434;
+    padding: 5px 0px;    
+}
+.active-menu-2{
+    background-color: #343434;
+    padding: 5px 0px;
+}
+
+.select2-search input{
+    background-color: #525252;
+}
+
 .select2-container--default .select2-selection--single{
     padding:6px;
     height: 45px;
@@ -195,7 +208,7 @@ body {
     font-size: small;
 }
 @media (max-width: 992px) {
-    #news-div, #toggle-theme, #tabs, #suggestions-row-div, #left{
+    #news-div, #tabs, #suggestions-row-div, #left{
         display: none;
     }
     #collapsed-sidebar{

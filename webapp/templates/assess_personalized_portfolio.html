@@ -58,7 +58,7 @@
 
 {% endblock %}
 
-{% block scripts %}
+{% block script %}
 <script>
     let stockCount = 1;
     let i = 0;
@@ -368,8 +368,10 @@
         }
     }
 
-    $(".border-start").removeClass('border-start')
-    $("#tabs").find(".assess-personalized-portfolio").addClass("border-start")
+    $(".active-menu-1").removeClass('.active-menu-1')
+    $("#tabs").find(".assess-personalized-portfolio-menu-1").addClass(".active-menu-1")
+    $(".active-menu-2").removeClass("active-menu-2");
+    $(".offcanvas-body").find(".assess-personalized-portfolio-menu-2").addClass("active-menu-2");
 
 </script>
 {% endblock %}

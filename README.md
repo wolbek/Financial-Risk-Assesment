@@ -1,6 +1,7 @@
 ## TO USE THE PROJECT:
 
 ### Download and install Anaconda. Checkmark both “Add to path” and “default”.
+### (Better to execute command in powershell as administrator mode)
 
 ### Clone the project using:
 ```git clone https://github.com/wolbek/Financial-Risk-Assessment.git```

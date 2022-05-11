@@ -24,14 +24,14 @@
                             title="Home">
                             <img src="/static/images/home-icon.png" width="22px" />
                         </a>
-                    </div>                    
-                    <div class="row mx-0 my-4 text-center assess-personalized-portfolio border-start">
+                    </div>
+                    <div class="row mx-0 my-4 text-center assess-personalized-portfolio-menu-1 active-menu-1">
                         <a href="{{url_for('assess_personalized_portfolio')}}" class="btn" data-bs-toggle="tooltip"
                             data-bs-placement="right" title="Portfolio">
-                            <img src="/static/images/portfolio-icon.png" width="30px" />
+                            <img src="/static/images/portfolio-icon-main.png" width="22px" />
                         </a>
                     </div>
-                    <div class="row mx-0 my-4 text-center search-company">
+                    <div class="row mx-0 my-4 text-center search-company-menu-1">
                         <a href="{{url_for('search_company')}}" class="btn" data-bs-toggle="tooltip"
                             data-bs-placement="right" title="Search">
                             <img src="/static/images/search-icon.png" width="22px" />
@@ -63,23 +63,23 @@
                             <h4 class="mx-2 mt-3 d-inline text-white"><a href="{{url_for('home')}}"
                                     style="color: #a5a5a5; text-decoration: none;">Home</a></h4>
                         </div>
-                    </div>                    
-                    <div class="row mx-0 my-4">
+                    </div>
+                    <div class="row mx-0 my-4 assess-personalized-portfolio-menu-2 active-menu-2">
                         <div class="col-1">
-                            <img class="mt-0" src="/static/images/portfolio-icon.png" width="22px" />
+                            <img class="mt-0" src="/static/images/portfolio-icon-main.png" width="22px" />
                         </div>
                         <div class="col">
-                            <h4 class="mx-2 mt-3 d-inline text-white assess-personalized-portfolio"><a
+                            <h4 class="mx-2 mt-3 d-inline text-white "><a
                                     href="{{url_for('assess_personalized_portfolio')}}"
-                                    style="color: #6DF0F0;">Portfolio</a></h4>
+                                    style="color: #a5a5a5; text-decoration: none;">Portfolio</a></h4>
                         </div>
                     </div>
-                    <div class="row mx-0 my-4">
+                    <div class="row mx-0 my-4 search-company-menu-2">
                         <div class="col-1">
                             <img class="mt-0" src="/static/images/search-icon.png" width="22px" />
                         </div>
                         <div class="col">
-                            <h4 class="mx-2 mt-3 d-inline text-white search-company"><a
+                            <h4 class="mx-2 mt-3 d-inline text-white "><a
                                     href="{{url_for('search_company')}}"
                                     style="color: #a5a5a5; text-decoration: none;">Search</a></h4>
                         </div>
@@ -132,30 +132,30 @@
                 </div> -->
                 <div class="col">
                     <form method="GET" action="{{url_for('search_company')}}">
-                    <div class="col" id="search-bar">
-                        <div class="row mb-3 ">
+                        <div class="col" id="search-bar">
+                            <div class="row mb-3 ">
 
-                            <div class=" col-lg-11 col-sm-10 col-9">
-                                <select name="company" class="select2-selector" id="search-bar-select-field">
-                                    <option value='' selected>Search</option>
-                                    {% for company in companies %}
-                                    <option value="{{company.symbol}}.NS">{{company.name}}</option>
-                                    {% endfor %}
-                                </select>
+                                <div class=" col-lg-11 col-sm-10 col-10">
+                                    <select name="company" class="select2-selector" id="search-bar-select-field" onchange="this.form.submit()">
+                                        <option value='' selected>Search</option>
+                                        {% for company in companies %}
+                                        <option value="{{company.symbol}}.NS">{{company.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col d-flex justify-content-end" id="toggle-theme-div">
+                                    <div class="" id="toggle-theme">
+                                        <button type="button" class="btn" id="theme-btn"><img src="/static/images/moon.png"
+                                                width="50%" /></button>
+                                    </div>
+                                </div>
+
+                                <!-- <input type="text" class="form-control bg-transparent border-0 text-white" placeholder="Search" aria-describedby="search-icon"> -->
                             </div>
-                            <div class="col-lg-1 col-md-2 col-sm-2 col-1">
-                                <button type="submit" id="search-button"><span
-                                        class="input-group-text bg-transparent border-0" id="search-icon"><img
-                                            src="/static/images/search-bar-icon.png" height="60%" /></span></button>
-                            </div>
-
-
-
-
-                            <!-- <input type="text" class="form-control bg-transparent border-0 text-white" placeholder="Search" aria-describedby="search-icon"> -->
                         </div>
-                    </div>
                     </form>
+
                 </div>
             </div>
             <div class="row">
@@ -165,3 +165,4 @@
     </div>
 </div>
 {% endblock %}
+

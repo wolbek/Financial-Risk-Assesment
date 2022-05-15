@@ -136,7 +136,7 @@
                 },
                 success: function (data) {
                     data = JSON.parse(data);
-                    console.log(data)
+                    // console.log(data)
                     let background_color = "#000517"
                     // let background_color = "rgba(0, 0, 21, 1)"
                     let grid_color = "#383838"
@@ -226,7 +226,7 @@
 
                     // Fbprophet
                     // for (let i = 1; i <= data.newpreds; i++) {
-                    console.log(data.future_prediction_chart_data.f_preds_changes)
+                    // console.log(data.future_prediction_chart_data.f_preds_changes)
                     $.each(data.future_prediction_chart_data.f_preds_data, function (key, value) {
                         //key=company name, value=its data
                         var plot_traces = [

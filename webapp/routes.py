@@ -93,7 +93,7 @@ def line_chart():
     exp_vol = np.sqrt(np.dot(weight.T, np.dot(log_returns.cov()*252, weight)))
     sharpe_ratio = exp_rtn / exp_vol
 
-    #Monte-Carlo simulation
+    #Monte-Carlo simulation (in here we find the most efficient sharpe ratio)
     n = 10000
     weights = np.zeros((n, len(tickers)))
     exp_rtns = np.zeros(n)
@@ -104,7 +104,6 @@ def line_chart():
         weight = np.random.random(len(tickers))
         weight /= weight.sum()
         weights[i] = weight
-        
         exp_rtns[i] = np.sum(log_returns.mean()*weight)*252
         exp_vols[i] = np.sqrt(np.dot(weight.T, np.dot(log_returns.cov()*252, weight)))
         sharpe_ratios[i] = exp_rtns[i] / exp_vols[i]
@@ -125,19 +124,20 @@ def line_chart():
         stock.reset_index(inplace=True)
         stock = stock.rename(columns={"Date": "ds", ticker: "y"})
         stock.dropna(axis=0,inplace=True)
-        print(ticker)
         model=Prophet()
         model.fit(stock)
         future_dates=model.make_future_dataframe(periods=1095)
         prediction=model.predict(future_dates)        
         preds[ticker]=prediction
+        # print(ticker)
+
 
     f_preds_changes = []
     for x in preds:
         f_predict = preds[x][-30:][['yhat','yhat_upper']].mean().mean()
         now = df[x][-1]
-        print(x,f"percentage change %:{(f_predict-now)/now*100}")
-        f_preds_changes.append((f_predict-now)/now)
+        # print(x,f"percentage change %:{(f_predict-now)/now*100}")
+        f_preds_changes.append(round((f_predict-now)/now*100,2))
 
    
     f_preds_data={}
@@ -151,21 +151,41 @@ def line_chart():
         }      
 
     hybrid_ratios = np.array([sum(x) for x in weights*f_preds_changes]) + sharpe_ratios
+    # print(hybrid_ratios)
     index = np.where(normalize(exp_vols,0,1) <= 1) 
+
+    hybrid_ratio=hybrid_ratios[index].max()
+
+    ev_hb=exp_vols[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist()
+    er_hb=exp_rtns[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist()
+
+    hybrid_ratios=hybrid_ratios.tolist()
+    best_weight_combination_list=(weights[hybrid_ratios.index(hybrid_ratio)]*100).tolist()
+    best_weight_combination_dictionary={}
+    for i,ticker in enumerate(df.columns):
+        best_weight_combination_dictionary[ticker]=best_weight_combination_list[i]
+
+    # print(f"SHARPE RATIO: {sharpe_ratio}")
+    # print(f"HYBRID RATIO: {hybrid_ratio}")
+    # print(f"EXPECTED RETURN: {er_hb}")
+    # print(f"EXPECTED VOLATILITY: {ev_hb}")
+    # print(f"BEST WEIGHT COMBINATION: {best_weight_combination_dictionary}")
+
     risk_return_chart_data={
         "expected_return":exp_rtns.tolist(),
         "expected_volatility":exp_vols.tolist(),
-        "ev_hb":exp_vols[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist(),
-        "er_hb":exp_rtns[np.where(hybrid_ratios == hybrid_ratios[index].max())].tolist()
+        "ev_hb":ev_hb,
+        "er_hb":er_hb
     }
-    # ef1_ev=(exp_vols[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
-    # ef1_er=(exp_rtns[np.where(sharpe_ratios == sharpe_ratios[index].max())]).tolist()
+    
     future_prediction_chart_data={
         "f_preds_changes":f_preds_changes,
         "f_preds_data":f_preds_data
     }
 
-    return json.dumps({"sharpe_ratio":sharpe_ratio,"risk_return_chart_data":risk_return_chart_data,"future_prediction_chart_data":future_prediction_chart_data})
+    
+
+    return json.dumps({"sharpe_ratio":sharpe_ratio,"hybrid_ratio":hybrid_ratio,"risk_return_chart_data":risk_return_chart_data,"best_weight_combination_dictionary":best_weight_combination_dictionary,"future_prediction_chart_data":future_prediction_chart_data})
     # chart_data={
     #     "expected_return":[1,2,3],
     #     "expected_volatility":[1,2,3],

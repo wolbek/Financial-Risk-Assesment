@@ -45,9 +45,10 @@
             <div class="spinner-text">Loading</div>
         </div>
         <div id="output-wrapper" style="display:none;">
-            <p style="text-align:center;margin-top: 30px;">Return On Investment In Comparison To Risk Taken:</p>
-            <h1 id="sharpe-ratio" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
-            <div id="plot1" class="chart-info" style="width:94%;margin: 20px;"></div>
+            <p style="text-align:center;margin-top: 30px;">Return On Investment In Comparison To Risk Taken According To Given Weights:</p>
+            <h1 id="sharpe-ratio-result" style="text-align:center;margin-bottom:30px;font-size: 80px;"></h1>
+            <p id="sharpe-ratio"></p>
+            <!-- <div id="plot1" class="chart-info" style="width:94%;margin: 20px;"></div> -->
 
             <!-- <div id="plot2" class="chart-info" style="width:50%;margin: 20px;"></div> -->
         </div>
@@ -62,6 +63,7 @@
 <script>
     let stockCount = 1;
     let i = 0;
+    let inc=0;
     // Add new experience input field when clicked on add circle (Delegated Event)
     $("body").on("click", "#add", function () {
         ++stockCount;
@@ -120,7 +122,7 @@
         if (!$(".error")[0]) {
             $(`#chart-spinner`).css('display', 'block');
             $('#output-wrapper').hide();
-            for (let j = 2; j <= i; j++) {
+            for (let j = 1; j <= i; j++) {
                 $(`#plot${j}`).remove();
             }
             i = 2;
@@ -141,19 +143,21 @@
                     $(`#chart-spinner`).hide();
                     $("#output-wrapper").css('display', 'block')
                     //Sharpe Ratio
-                    $("#sharpe-ratio").css('display', 'block')
-                    if (data.sharpe_ratio < 1) {
-                        $("#sharpe-ratio").text("Bad");
+                    $("#sharpe-ratio-result").css('display', 'block')
+                    sharpe_ratio=data.sharpe_ratio
+                    if ( sharpe_ratio < 1) {
+                        $("#sharpe-ratio-result").text("Bad");
                     }
-                    else if (data.sharpe_ratio >= 1 && data.sharpe_ratio < 1.99) {
-                        $("#sharpe-ratio").text("Good");
+                    else if (sharpe_ratio >= 1 && sharpe_ratio < 1.99) {
+                        $("#sharpe-ratio-result").text("Good");
                     }
-                    else if (data.sharpe_ratio >= 2 && data.sharpe_ratio < 2.99) {
-                        $("#sharpe-ratio").text("Very Good");
+                    else if (sharpe_ratio >= 2 && sharpe_ratio < 2.99) {
+                        $("#sharpe-ratio-result").text("Very Good");
                     }
-                    else if (data.sharpe_ratio >= 3) {
-                        $("#sharpe-ratio").text("Excellent");
+                    else if (sharpe_ratio >= 3) {
+                        $("#sharpe-ratio-result").text("Excellent");
                     }
+                    $("#sharpe-ratio").text(`Sharpe Ratio: ${sharpe_ratio}`).css("text-align","center");
 
                     // Efficient Frontier
                     var plot1_traces = [{
@@ -204,15 +208,27 @@
                     let plot1_config = {
                         responsive: true,
                     }
+                   
+                    let html =
+                            `<div id="plot1" class="chart-info" style="width:95%;margin: 20px;"></div>`
 
+                    $("#output-wrapper").append(html)
                     Plotly.newPlot('plot1', plot1_traces, plot1_layout, plot1_config);
+                    // $('#plot1').append(`<p>Hybrid ratio =${data.hybrid_ratio}</p>`)
+                   
+                    $('#plot1').append(`<p>Best Weight Combination:</p>`)
+                  
+                    $.each(data.best_weight_combination_dictionary, function (key, value) {
+                        $('#plot1').append(`<p>${key}: ${value.toFixed(2)} %</p>`)
+                    })
 
+                    inc=0;
 
                     // Fbprophet
                     // for (let i = 1; i <= data.newpreds; i++) {
                     console.log(data.future_prediction_chart_data.f_preds_changes)
                     $.each(data.future_prediction_chart_data.f_preds_data, function (key, value) {
-
+                        //key=company name, value=its data
                         var plot_traces = [
                             {
                                 x: value['ds'],
@@ -285,6 +301,7 @@
 
                         $("#output-wrapper").append(html)
                         Plotly.newPlot(`plot${i}`, plot_traces, plot_layout, plot_config);
+                        $(`#plot${i}`).append(`Percentage change: ${data.future_prediction_chart_data.f_preds_changes[inc++]} %`)
 
                         i++;
                     })

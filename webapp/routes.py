@@ -76,7 +76,7 @@ def assess_personalized_portfolio():
 def line_chart(): 
     stocks=request.form.getlist('stocks[]')
     weights=request.form.getlist('weights[]')
-    weights=[int(x) for x in weights]
+    weights=[float(x) for x in weights]
     tickers=[]
     for name in stocks:
         symbol=list(filter(lambda x: x['name'] == name, companies))[0]['symbol']
@@ -150,7 +150,8 @@ def line_chart():
             "actual":df[ticker].dropna().tolist()
         }      
 
-    hybrid_ratios = np.array([sum(x) for x in weights*f_preds_changes]) + sharpe_ratios
+    hybrid_ratios = np.array([sum(x)/120 for x in weights*f_preds_changes]) + sharpe_ratios
+    # hybrid_ratios = sharpe_ratios
     # print(hybrid_ratios)
     index = np.where(normalize(exp_vols,0,1) <= 1) 
 

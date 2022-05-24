@@ -297,7 +297,7 @@
                             responsive: true,
                         }
                         let html =
-                            `<div id="plot${i}" class="chart-info" style="width:95%;margin: 20px;"></div>`
+                            `<div id="plot${i}" class="chart-info" style="width:95%;height:600px;margin: 20px;"></div>`
 
                         $("#output-wrapper").append(html)
                         Plotly.newPlot(`plot${i}`, plot_traces, plot_layout, plot_config);
@@ -375,8 +375,10 @@
         //Weight sum is not 100 error
         let sum = 0
         for (let i = 0; i < weights.length; i++) {
-            sum += parseInt(weights[i]);
+            sum += parseFloat(weights[i]);
         }
+        console.log(sum);
+        sum=parseInt(sum);
         if (sum != 100) {
             $("#portfolio-wrapper").find(".weightError").remove();
             $("#portfolio-wrapper").append($("<p>").text("Total weight % is not 100").addClass('error weightError'))

@@ -25,11 +25,11 @@
 ```pip install -r requirements.txt```
 
 ### Install other needed dependencies with these commands:
-```conda install numpy cython -c conda-forge```
-```conda install matplotlib scipy pandas -c conda-forge```
-```conda install pystan -c conda-forge```
-```conda install -c anaconda ephem```
-```conda install -c conda-forge fbprophet```
+```conda install numpy cython -c conda-forge```  
+```conda install matplotlib scipy pandas -c conda-forge```  
+```conda install pystan -c conda-forge```  
+```conda install -c anaconda ephem```  
+```conda install -c conda-forge fbprophet```  
 
 ### Initialize database:  
 ```.\run.bat init-db```
